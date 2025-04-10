@@ -1,0 +1,5 @@
+event-server/node_modules
+event-client/node_modules
+
+event-server/.env
+event-client/.env

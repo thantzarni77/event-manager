@@ -1,0 +1,17 @@
+@font-face {
+  font-family: "AdwaitaSans-Regular";
+  src:
+    local("AdwaitaSans-Regular"),
+    url(./fonts/AdwaitaSans-Regular.ttf) format("truetype");
+}
+
+html,
+body {
+  font-family: AdwaitaSans-Regular, serif;
+  height: 100%;
+}
+
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: cupcake, dracula;
+}
