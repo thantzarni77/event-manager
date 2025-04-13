@@ -1,16 +1,22 @@
 import { useContext, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, Navigate } from "react-router";
 
 import { MainContext } from "../context/MainContext";
 
 const Navbar = () => {
-  const { theme, setTheme } = useContext(MainContext);
+  const { theme, setTheme, setToken } = useContext(MainContext);
 
   //set theme to localstorage and change theme
   useEffect(() => {
     localStorage.setItem("theme", theme);
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
+  const logoutController = () => {
+    setToken(null);
+
+    return <Navigate to={"/"} />;
+  };
 
   return (
     <div className="navbar bg-base-100 sticky top-0 z-50 opacity-90 shadow-sm backdrop-blur-xl">
@@ -207,7 +213,9 @@ const Navbar = () => {
               <a className="text-base">Settings</a>
             </li>
             <li>
-              <a className="text-base">Logout</a>
+              <a className="text-base" onClick={logoutController}>
+                Logout
+              </a>
             </li>
           </ul>
         </div>

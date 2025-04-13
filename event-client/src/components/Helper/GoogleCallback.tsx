@@ -3,11 +3,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { MainContext } from "../../context/MainContext";
 import { User } from "../../context/MainContextProvider";
 
+import { ScaleLoader } from "react-spinners";
+
+import axiosClient from "../../axios-client";
+
 const GoogleCallback = () => {
   const [data, setData] = useState<Data | null>(null);
-  const { setUser } = useContext(MainContext);
+  const { theme, setUser, setToken } = useContext(MainContext);
   const hasFetched = useRef(false);
   const location = useLocation();
+
   const navigate = useNavigate();
 
   type Data = {
@@ -21,38 +26,34 @@ const GoogleCallback = () => {
 
     hasFetched.current = true;
 
-    fetch(`http://localhost:8000/api/auth/callback${location.search}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
+    axiosClient
+      .get(`auth/callback/${location.search}`)
+      .then(({ data }) => {
         setData(data);
-        localStorage.setItem("access_token", data.access_token);
+        setToken(data.access_token);
       })
       .then(() => {
-        fetch(`http://localhost:8000/api/user`, {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
+        axiosClient
+          .get("user")
+          .then(({ data }) => {
             setUser(data);
+          })
+          .then(() => {
+            navigate("/");
           });
-      })
-      .then(() => {
-        navigate("/");
       });
-  }, [location.search, setUser, navigate, data]);
+  }, [location.search, setUser, data, setToken, navigate]);
 
-  return <span className="min-h-screen">Redirecting to home....</span>;
+  return (
+    <div className="mt-[15%] flex min-h-screen flex-col items-center gap-5">
+      <p
+        className={`text-xl font-bold ${theme == "dracula" ? "text-white" : "text-black"}`}
+      >
+        Redirecting to home....
+      </p>
+      <ScaleLoader color="#8BE9FD" />
+    </div>
+  );
 };
 
 export default GoogleCallback;

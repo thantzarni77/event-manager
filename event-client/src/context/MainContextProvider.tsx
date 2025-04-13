@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Value } from "./MainContext";
 import { MainContext } from "./MainContext";
+import axiosClient from "../axios-client";
 
 export type User = {
   id: string;
@@ -105,20 +106,31 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.getItem("theme") || "dracula",
   );
 
-  // load user from localStorage on initial render
-  const [user, setUser] = useState<User | null>(() => {
-    const savedUser = localStorage.getItem("user");
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
+  const [user, setUser] = useState<User | null>(null);
 
-  // save user to localStorage on change
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
+  const [token, _setToken] = useState(localStorage.getItem("access_token"));
+
+  const setToken = (token: string | null) => {
+    _setToken(token);
+    if (token) {
+      localStorage.setItem("access_token", token);
     } else {
-      localStorage.removeItem("user");
+      localStorage.removeItem("access_token");
     }
-  }, [user]);
+  };
+
+  const [loginUrl, setLoginUrl] = useState(null);
+
+  useEffect(() => {
+    axiosClient
+      .get("auth")
+      .then(({ data }) => {
+        setLoginUrl(data.url);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }, []);
 
   const values: Value = {
     theme,
@@ -126,6 +138,10 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     data,
     user,
     setUser,
+    token,
+    setToken,
+    loginUrl,
+    setLoginUrl,
   };
 
   return <MainContext.Provider value={values}>{children}</MainContext.Provider>;

@@ -1,11 +1,12 @@
 <?php
-namespace App\Http\Controllers;
+namespace App\Repositories;
 
+use App\Interfaces\GoogleLoginRepositoryInterface;
 use App\Models\User;
 use GuzzleHttp\Exception\ClientException;
 use Laravel\Socialite\Facades\Socialite;
 
-class SocialLoginController extends Controller
+class GoogleLoginRepository implements GoogleLoginRepositoryInterface
 {
     //redirect
     public function redirect()
@@ -49,5 +50,4 @@ class SocialLoginController extends Controller
         ]);
 
     }
-
 }

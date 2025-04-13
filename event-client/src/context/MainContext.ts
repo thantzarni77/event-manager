@@ -7,6 +7,10 @@ export type Value = {
   data: singleData[];
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  token: string | null;
+  setToken: (token: string | null) => void;
+  loginUrl: string | null;
+  setLoginUrl: React.Dispatch<React.SetStateAction<null>>;
 };
 
 type singleData = {
@@ -24,6 +28,10 @@ const initialValues: Value = {
   data: [],
   user: null,
   setUser: () => {},
+  token: null,
+  setToken: () => {},
+  loginUrl: null,
+  setLoginUrl: () => {},
 };
 
 export const MainContext = createContext(initialValues);

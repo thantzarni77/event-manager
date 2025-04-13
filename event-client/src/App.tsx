@@ -9,6 +9,7 @@ import Purchase from "./components/Purchase";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import GoogleCallback from "./components/Helper/GoogleCallback";
+import MainContextProvider from "./context/MainContextProvider";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -51,7 +52,11 @@ const App = () => {
       ],
     },
   ]);
-  return <RouterProvider router={router}></RouterProvider>;
+  return (
+    <MainContextProvider>
+      <RouterProvider router={router}></RouterProvider>
+    </MainContextProvider>
+  );
 };
 
 export default App;
