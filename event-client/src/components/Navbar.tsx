@@ -1,10 +1,11 @@
 import { useContext, useEffect } from "react";
-import { Link, Navigate } from "react-router";
+import { Link } from "react-router";
 
 import { MainContext } from "../context/MainContext";
+import axiosClient from "../axios-client";
 
 const Navbar = () => {
-  const { theme, setTheme, setToken } = useContext(MainContext);
+  const { theme, setTheme, setToken, setUser } = useContext(MainContext);
 
   //set theme to localstorage and change theme
   useEffect(() => {
@@ -13,9 +14,12 @@ const Navbar = () => {
   }, [theme]);
 
   const logoutController = () => {
-    setToken(null);
-
-    return <Navigate to={"/"} />;
+    axiosClient.get("user/destroy").then((response) => {
+      if (response.status == 204) {
+        setToken(null);
+        setUser(null);
+      }
+    });
   };
 
   return (

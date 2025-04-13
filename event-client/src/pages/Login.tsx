@@ -1,11 +1,16 @@
-import { useContext, useEffect } from "react";
+import { createRef, useContext, useEffect, useState } from "react";
 import { LuLogIn } from "react-icons/lu";
 import { Link, useNavigate } from "react-router";
 import LoginWithGoogle from "../components/LoginWithGoogle";
 import { MainContext } from "../context/MainContext";
+import axiosClient from "../axios-client";
 
 const Login = () => {
-  const { token, loginUrl } = useContext(MainContext);
+  const { token, loginUrl, setToken, setUser } = useContext(MainContext);
+  const [error, setError] = useState<string | undefined | null>();
+
+  const emailRef = createRef<HTMLInputElement>();
+  const passwordRef = createRef<HTMLInputElement>();
 
   const navigate = useNavigate();
 
@@ -15,11 +20,33 @@ const Login = () => {
     }
   }, [navigate, token]);
 
+  const loginHandler = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const payload = {
+      email: emailRef.current?.value,
+      password: passwordRef.current?.value,
+    };
+
+    axiosClient
+      .post("login", payload)
+      .then(({ data }) => {
+        setToken(data.access_token);
+        setUser(data.user);
+      })
+      .catch(({ response }) => {
+        setError(response.data.message);
+      });
+  };
+
   if (token == null) {
     return (
       <div className="mx-auto my-4 flex min-h-screen w-full flex-col items-center gap-4">
         <h1 className="text-xl font-bold">Login here</h1>
-        <form className="mx-auto flex w-[80%] flex-col items-center gap-1">
+        <form
+          className="mx-auto flex w-[80%] flex-col items-center gap-1"
+          onSubmit={loginHandler}
+        >
           <div className="flex w-full flex-col lg:w-[50%]">
             <label htmlFor="">Email</label>
             <label className="input validator my-2 w-full">
@@ -39,7 +66,12 @@ const Login = () => {
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                 </g>
               </svg>
-              <input type="email" placeholder="mail@site.com" required />
+              <input
+                type="email"
+                placeholder="mail@site.com"
+                required
+                ref={emailRef}
+              />
             </label>
             <div className="validator-hint hidden">
               Enter valid email address
@@ -72,6 +104,7 @@ const Login = () => {
               </svg>
               <input
                 type="password"
+                ref={passwordRef}
                 required
                 placeholder="Password"
                 minLength={8}
@@ -79,6 +112,7 @@ const Login = () => {
                 title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
               />
             </label>
+            {error && <div className="text-sm text-red-500">{error}</div>}
           </div>
 
           <p className="my-1">

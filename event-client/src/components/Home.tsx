@@ -7,7 +7,6 @@ import axiosClient from "../axios-client";
 
 const Home = () => {
   const { user, setUser, token } = useContext(MainContext);
-
   const navigate = useNavigate();
 
   useEffect(() => {

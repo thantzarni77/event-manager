@@ -1,12 +1,27 @@
-import { useContext, useEffect } from "react";
+import { createRef, useContext, useEffect, useState } from "react";
 import { LuLogIn } from "react-icons/lu";
 import { Link, useNavigate } from "react-router";
 import LoginWithGoogle from "../components/LoginWithGoogle";
 import { MainContext } from "../context/MainContext";
+import axiosClient from "../axios-client";
 
 const Register = () => {
-  const { token, loginUrl } = useContext(MainContext);
+  type Errors = {
+    username: string[];
+    email: string[];
+    password: string[];
+    password_confirmation: string[];
+  };
+
+  const { token, setToken, setUser, loginUrl } = useContext(MainContext);
   const navigate = useNavigate();
+
+  const [errors, setErrors] = useState<Errors>();
+
+  const userNameRef = createRef<HTMLInputElement>();
+  const emailRef = createRef<HTMLInputElement>();
+  const passwordRef = createRef<HTMLInputElement>();
+  const confirmPasswordRef = createRef<HTMLInputElement>();
 
   useEffect(() => {
     if (token != null) {
@@ -14,11 +29,38 @@ const Register = () => {
     }
   }, [navigate, token]);
 
+  const registerUserHandler = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const payload = {
+      username: userNameRef.current?.value,
+      email: emailRef.current?.value,
+      password: passwordRef.current?.value,
+      password_confirmation: confirmPasswordRef.current?.value,
+    };
+
+    axiosClient
+      .post("signup", payload)
+      .then(({ data }) => {
+        setToken(data.access_token);
+        setUser(data.user);
+      })
+      .catch(({ response }) => {
+        setErrors(response.data.errors);
+      });
+    // .then(() => {
+    //   navigate("/");
+    // });
+  };
+
   if (token == null) {
     return (
       <div className="mx-auto my-4 flex min-h-screen w-full flex-col items-center gap-4">
         <h1 className="text-xl font-bold">Register an account here</h1>
-        <form className="mx-auto flex w-[80%] flex-col items-center gap-1">
+        <form
+          className="mx-auto flex w-[80%] flex-col items-center gap-1"
+          onSubmit={registerUserHandler}
+        >
           <div className="my-2 flex w-full flex-col lg:w-[50%]">
             <label htmlFor="username">Username</label>
             <label className="input validator my-2 w-full">
@@ -41,6 +83,7 @@ const Register = () => {
               <input
                 type="input"
                 name="username"
+                ref={userNameRef}
                 required
                 placeholder="Username"
                 pattern="[A-Za-z][A-Za-z0-9\-]*"
@@ -49,6 +92,9 @@ const Register = () => {
                 title="Only letters, numbers or dash"
               />
             </label>
+            {errors?.username && (
+              <div className="validator-hint">{errors.username[0]}</div>
+            )}
             {/* <p className="validator-hint">
             Must be 3 to 30 characters
             <br />
@@ -77,16 +123,21 @@ const Register = () => {
               </svg>
               <input
                 type="email"
-                name="username"
+                name="email"
+                ref={emailRef}
                 placeholder="mail@site.com"
                 required
               />
             </label>
+            {errors?.email && (
+              <div className="text-sm text-red-400">{errors.email[0]}</div>
+            )}
             <div className="validator-hint hidden">
               Enter valid email address
             </div>
           </div>
 
+          {errors?.password && <div>{errors.password[0]}</div>}
           <div className="my-2 flex w-full flex-col lg:w-[50%]">
             <label htmlFor="password">Password</label>
             <label className="input validator my-2 w-full">
@@ -115,6 +166,7 @@ const Register = () => {
                 type="password"
                 required
                 name="password"
+                ref={passwordRef}
                 placeholder="Password"
                 minLength={8}
                 pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
@@ -123,6 +175,9 @@ const Register = () => {
             </label>
           </div>
 
+          {errors?.password_confirmation && (
+            <div>{errors.password_confirmation[0]}</div>
+          )}
           <div className="flex w-full flex-col lg:w-[50%]">
             <label htmlFor="password_confirmation">Confirm Password</label>
             <label className="input validator my-2 w-full">
@@ -151,6 +206,7 @@ const Register = () => {
                 type="password"
                 required
                 name="password_confirmation"
+                ref={confirmPasswordRef}
                 placeholder="Confirm Password"
                 minLength={8}
                 pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
