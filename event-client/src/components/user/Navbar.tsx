@@ -1,11 +1,13 @@
 import { useContext, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
-import { MainContext } from "../context/MainContext";
-import axiosClient from "../axios-client";
+import { MainContext } from "../../context/MainContext";
+import axiosClient from "../../axios-client";
 
 const Navbar = () => {
   const { theme, setTheme, setToken, setUser } = useContext(MainContext);
+
+  const navigate = useNavigate();
 
   //set theme to localstorage and change theme
   useEffect(() => {
@@ -18,6 +20,7 @@ const Navbar = () => {
       if (response.status == 204) {
         setToken(null);
         setUser(null);
+        navigate("/login");
       }
     });
   };
@@ -64,7 +67,7 @@ const Navbar = () => {
 
       {/* Main center title */}
       <div className="navbar-center">
-        <Link to={"/"} className="btn btn-ghost text-xl">
+        <Link to={"/home"} className="btn btn-ghost text-xl">
           Ticketer
         </Link>
       </div>

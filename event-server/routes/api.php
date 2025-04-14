@@ -11,14 +11,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         return $request->user();
     });
 
+    //user logout
     Route::get('/user/destroy', [AuthController::class, 'logout']);
 
 });
 
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');
-
+//google login
 Route::get('auth', [GoogleLoginController::class, 'redirect']);
 Route::get('auth/callback', [GoogleLoginController::class, 'callback']);
 

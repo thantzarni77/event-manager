@@ -31,13 +31,15 @@ class GoogleLoginRepository implements GoogleLoginRepositoryInterface
             return response()->json(['error' => 'Invalid credentials provided.'], 422);
         }
 
+        $oldUser = User::where('provider_id', $socialiteUser->id)->first();
+
         $user = User::updateOrCreate([
             'provider_id' => $socialiteUser->id,
         ], [
             'name'           => $socialiteUser->name,
             'email'          => $socialiteUser->email,
             // 'profile'        => $socialiteUser->avatar,
-            'role'           => 'user',
+            'role'           => $oldUser ? $oldUser['role'] : 'user',
             'provider'       => 'google',
             'provider_id'    => $socialiteUser->id,
             'provider_token' => $socialiteUser->token,

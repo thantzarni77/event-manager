@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { MainContext } from "../../context/MainContext";
-import { User } from "../../context/MainContextProvider";
+import { MainContext } from "../context/MainContext";
+import { User } from "../context/MainContextProvider";
 
 import { ScaleLoader } from "react-spinners";
 
-import axiosClient from "../../axios-client";
+import axiosClient from "../axios-client";
 
 const GoogleCallback = () => {
   const [data, setData] = useState<Data | null>(null);

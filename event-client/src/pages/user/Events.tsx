@@ -3,9 +3,9 @@ import { useContext, useRef, useState } from "react";
 import { FaFilter } from "react-icons/fa6";
 import { compareAsc, format, isValid, parseISO } from "date-fns";
 
-import Event from "../components/Event/Event";
+import Event from "../../components/user/Event/Event";
 import { MdFilterAltOff } from "react-icons/md";
-import { MainContext } from "../context/MainContext";
+import { MainContext } from "../../context/MainContext";
 
 const Events = () => {
   const { data } = useContext(MainContext);

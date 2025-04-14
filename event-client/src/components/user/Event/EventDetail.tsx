@@ -6,7 +6,7 @@ import { HiOutlineViewColumns } from "react-icons/hi2";
 import { MdDateRange } from "react-icons/md";
 import { PiShoppingCartDuotone } from "react-icons/pi";
 
-import { MainContext } from "../../context/MainContext";
+import { MainContext } from "../../../context/MainContext";
 
 const EventDetail = () => {
   const { theme } = useContext(MainContext);

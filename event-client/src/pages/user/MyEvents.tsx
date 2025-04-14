@@ -1,4 +1,4 @@
-import Event from "../components/Event/Event";
+import Event from "../../components/user/Event/Event";
 
 const MyEvents = () => {
   return (
