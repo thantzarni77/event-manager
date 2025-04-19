@@ -5,7 +5,7 @@ import { MainContext } from "../../context/MainContext";
 import axiosClient from "../../axios-client";
 
 const Navbar = () => {
-  const { theme, setTheme, setToken, setUser } = useContext(MainContext);
+  const { theme, setTheme, setToken, setUser, user } = useContext(MainContext);
 
   const navigate = useNavigate();
 
@@ -188,6 +188,8 @@ const Navbar = () => {
             </div>
           </div>
         </div>
+
+        <span>{user?.name}</span>
 
         {/* Profile Dropdown */}
         <div className="dropdown dropdown-end">

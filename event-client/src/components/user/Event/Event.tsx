@@ -15,7 +15,7 @@ type Props = {
 
 const Event = ({ id, title, type, image, location, date }: Props) => {
   return (
-    <Link to={`events/${id}`}>
+    <Link to={`/events/${id}`}>
       <div className="card bg-base-300 h-[350px] w-96 cursor-pointer shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-lg lg:w-[350px]">
         <figure>
           <img

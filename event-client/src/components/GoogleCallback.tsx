@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { MainContext } from "../context/MainContext";
 import { User } from "../context/MainContextProvider";
 
@@ -9,7 +9,7 @@ import axiosClient from "../axios-client";
 
 const GoogleCallback = () => {
   const [data, setData] = useState<Data | null>(null);
-  const { theme, setUser, setToken } = useContext(MainContext);
+  const { theme, setUser, setToken, user } = useContext(MainContext);
   const hasFetched = useRef(false);
   const location = useLocation();
 
@@ -33,16 +33,9 @@ const GoogleCallback = () => {
         setToken(data.access_token);
       })
       .then(() => {
-        axiosClient
-          .get("user")
-          .then(({ data }) => {
-            setUser(data);
-          })
-          .then(() => {
-            navigate("/");
-          });
+        navigate("/");
       });
-  }, [location.search, setUser, data, setToken, navigate]);
+  }, [location.search, setUser, data, setToken, navigate, user]);
 
   return (
     <div className="mt-[15%] flex min-h-screen flex-col items-center gap-5">

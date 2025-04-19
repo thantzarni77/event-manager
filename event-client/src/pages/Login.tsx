@@ -1,4 +1,4 @@
-import { createRef, useContext, useEffect, useState } from "react";
+import { createRef, useContext, useState } from "react";
 import { LuLogIn } from "react-icons/lu";
 import { Link, useNavigate } from "react-router";
 import LoginWithGoogle from "../components/LoginWithGoogle";
@@ -8,19 +8,15 @@ import axiosClient from "../axios-client";
 const Login = () => {
   const { token, loginUrl, setToken, setUser } = useContext(MainContext);
   const [error, setError] = useState<string | undefined | null>();
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const emailRef = createRef<HTMLInputElement>();
   const passwordRef = createRef<HTMLInputElement>();
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (token != null) {
-      navigate(-1);
-    }
-  }, [navigate, token]);
-
   const loginHandler = (event: React.FormEvent) => {
+    setLoading(true);
     event.preventDefault();
 
     const payload = {
@@ -34,8 +30,13 @@ const Login = () => {
         setToken(data.access_token);
         setUser(data.user);
       })
+      .then(() => {
+        setLoading(false);
+        navigate("/");
+      })
       .catch(({ response }) => {
         setError(response.data.message);
+        setLoading(false);
       });
   };
 
@@ -142,6 +143,7 @@ const Login = () => {
             </p>
 
             <button
+              disabled={loading}
               type="submit"
               className="btn btn-primary my-2 w-full lg:w-[50%]"
             >

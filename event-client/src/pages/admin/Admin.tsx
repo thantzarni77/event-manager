@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router";
 import { MainContext } from "../../context/MainContext";
 import axiosClient from "../../axios-client";
 
@@ -16,6 +16,7 @@ const Admin = () => {
       }
     });
   };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="bg-black p-4 text-white">

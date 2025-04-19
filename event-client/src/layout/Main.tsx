@@ -1,31 +1,28 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router";
 
 import Navbar from "../components/user/Navbar";
-import Footer from "../components/user/Helper/Footer";
+import Footer from "../helper/Footer";
 import ScrollToTop from "../components/user/ScrollToTop";
-import { useContext, useEffect } from "react";
-import { MainContext } from "../context/MainContext";
-import axiosClient from "../axios-client";
 
 const Main = () => {
-  const { user, token, setUser } = useContext(MainContext);
-  const navigate = useNavigate();
+  // useEffect(() => {
+  //   if (token) {
+  //     // axiosClient
+  //     //   .get("user")
+  //     //   .then(({ data }) => {
+  //     //     setUser(data);
 
-  useEffect(() => {
-    axiosClient
-      .get("user")
-      .then(({ data }) => {
-        setUser(data);
-        if (data.role == "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/home");
-        }
-      })
-      .catch((err) => {
-        throw err;
-      });
-  }, [user?.role, navigate, token, setUser]);
+  //     if (user?.role == "admin") {
+  //       navigate("/admin");
+  //     } else {
+  //       navigate("/home");
+  //     }
+  //     // })
+  //     // .catch((err) => {
+  //     //   throw err;
+  //     // });
+  //   }
+  // }, [user?.role, navigate, setUser, token]);
 
   return (
     <div>

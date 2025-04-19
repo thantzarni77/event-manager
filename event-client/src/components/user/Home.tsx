@@ -1,16 +1,19 @@
 import { useContext, useEffect } from "react";
 import Events from "../../pages/user/Events";
-import Carousel from "./Helper/Carousel";
+import Carousel from "../../helper/Carousel";
 import { MainContext } from "../../context/MainContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import axiosClient from "../../axios-client";
 
 const Home = () => {
-  const { user, setUser, token } = useContext(MainContext);
+  const { user, token, setUser } = useContext(MainContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (token != null && token != undefined) {
+    if (token) {
+      if (user?.role == "admin") {
+        navigate("/admin");
+      }
       axiosClient
         .get("user")
         .then(({ data }) => {
@@ -25,9 +28,9 @@ const Home = () => {
     } else {
       navigate("/login");
     }
-  }, [token, setUser, navigate]);
+  }, [token, user?.role, navigate, setUser]);
 
-  if (token != null && user?.role == "user") {
+  if (token && user?.role == "user") {
     return (
       <div className="flex flex-col items-center">
         <Carousel />

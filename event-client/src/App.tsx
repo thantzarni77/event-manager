@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 
 import Main from "./layout/Main";
 
@@ -16,19 +16,48 @@ import MainContextProvider from "./context/MainContextProvider";
 import Admin from "./pages/admin/Admin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
+import UserLoginRoleCheck from "./helper/middleware/UserLoginRoleCheck";
+import RegisterMiddleware from "./helper/middleware/RegisterMiddleware";
+
 const App = () => {
   const router = createBrowserRouter([
     {
       path: "/",
       element: <Main />,
       children: [
-        { path: "home", element: <Home /> },
+        {
+          index: true,
+          element: <Navigate to="home" replace />,
+        },
+        {
+          path: "home",
+          element: (
+            <UserLoginRoleCheck>
+              <Home />
+            </UserLoginRoleCheck>
+          ),
+        },
         { path: "about", element: <About /> },
         { path: "my-events", element: <MyEvents /> },
         { path: "events/:id", element: <EventDetail /> },
         { path: "events/:id/purchase", element: <Purchase /> },
-        { path: "/login", element: <Login /> },
-        { path: "/register", element: <Register /> },
+        {
+          path: "/login",
+          index: true,
+          element: (
+            <UserLoginRoleCheck>
+              <Login />
+            </UserLoginRoleCheck>
+          ),
+        },
+        {
+          path: "/register",
+          element: (
+            <RegisterMiddleware>
+              <Register />
+            </RegisterMiddleware>
+          ),
+        },
         { path: "/auth/google", element: <GoogleCallback /> },
       ],
     },

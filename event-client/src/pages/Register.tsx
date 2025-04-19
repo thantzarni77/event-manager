@@ -1,4 +1,4 @@
-import { createRef, useContext, useEffect, useState } from "react";
+import { createRef, useContext, useState } from "react";
 import { LuLogIn } from "react-icons/lu";
 import { Link, useNavigate } from "react-router";
 import LoginWithGoogle from "../components/LoginWithGoogle";
@@ -14,22 +14,19 @@ const Register = () => {
   };
 
   const { token, setToken, setUser, loginUrl } = useContext(MainContext);
+
   const navigate = useNavigate();
 
   const [errors, setErrors] = useState<Errors>();
+  const [loading, setLoading] = useState(false);
 
   const userNameRef = createRef<HTMLInputElement>();
   const emailRef = createRef<HTMLInputElement>();
   const passwordRef = createRef<HTMLInputElement>();
   const confirmPasswordRef = createRef<HTMLInputElement>();
 
-  useEffect(() => {
-    if (token != null) {
-      navigate(-1);
-    }
-  }, [navigate, token]);
-
   const registerUserHandler = (event: React.FormEvent) => {
+    setLoading(true);
     event.preventDefault();
 
     const payload = {
@@ -45,8 +42,13 @@ const Register = () => {
         setToken(data.access_token);
         setUser(data.user);
       })
+      .then(() => {
+        setLoading(false);
+        navigate("/");
+      })
       .catch(({ response }) => {
         setErrors(response.data.errors);
+        setLoading(false);
       });
   };
 
@@ -271,6 +273,7 @@ const Register = () => {
             </div>
 
             <button
+              disabled={loading}
               type="submit"
               className="btn btn-primary my-2 w-full lg:w-[50%]"
             >
