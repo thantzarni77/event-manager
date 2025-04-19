@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Value } from "./MainContext";
 import { MainContext } from "./MainContext";
+import axiosClient from "../axios-client";
 
 export type User = {
   id: string;
@@ -117,6 +118,12 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.removeItem("access_token");
     }
   };
+
+  useEffect(() => {
+    axiosClient.get("user").then(({ data }) => {
+      setUser(data);
+    });
+  }, []);
 
   const values: Value = {
     theme,

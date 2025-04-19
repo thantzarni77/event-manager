@@ -1,37 +1,18 @@
-import { useContext } from "react";
-import { Outlet, useNavigate } from "react-router";
-import { MainContext } from "../../context/MainContext";
-import axiosClient from "../../axios-client";
+import React, { Suspense } from "react";
+import { Outlet } from "react-router";
+
+const TopBar = React.lazy(() => import("../../components/admin/TopBar"));
+const Dock = React.lazy(() => import("../../components/admin/Dock"));
 
 const Admin = () => {
-  const { setToken, setUser } = useContext(MainContext);
-  const navigate = useNavigate();
-
-  const logoutController = () => {
-    axiosClient.get("user/destroy").then((response) => {
-      if (response.status == 204) {
-        setToken(null);
-        setUser(null);
-        navigate("/login");
-      }
-    });
-  };
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="bg-black p-4 text-white">
-        <span>Admin Panel</span>
-        <button
-          className="mx-20 hover:cursor-pointer"
-          onClick={logoutController}
-        >
-          Logout
-        </button>
-      </div>
+    <div className="min-h-screen w-full bg-gray-100">
+      <Suspense fallback={<>...</>}>
+        <TopBar />
 
-      <main className="p-4">
         <Outlet />
-      </main>
+        <Dock />
+      </Suspense>
     </div>
   );
 };

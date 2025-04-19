@@ -1,20 +1,39 @@
+import React from "react";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 
-import Main from "./layout/Main";
+const Main = React.lazy(() => import("./layout/Main"));
 
-import Home from "./components/user/Home";
-import About from "./pages/user/About";
-import MyEvents from "./pages/user/MyEvents";
-import EventDetail from "./components/user/Event/EventDetail";
-import Purchase from "./components/user/Purchase";
+const Home = React.lazy(() => import("./components/user/Home"));
+const About = React.lazy(() => import("./pages/user/About"));
+const MyEvents = React.lazy(() => import("./pages/user/MyEvents"));
+const EventDetail = React.lazy(
+  () => import("./components/user/Event/EventDetail"),
+);
+const Purchase = React.lazy(() => import("./components/user/Purchase"));
 
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import GoogleCallback from "./components/GoogleCallback";
+const Login = React.lazy(() => import("./pages/Login"));
+const Register = React.lazy(() => import("./pages/Register"));
+const GoogleCallback = React.lazy(() => import("./components/GoogleCallback"));
 
-import Admin from "./pages/admin/Admin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import Landing from "./components/Landing";
+const Admin = React.lazy(() => import("./pages/admin/Admin"));
+const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
+const Landing = React.lazy(() => import("./components/Landing"));
+
+// import Main from "./layout/Main";
+
+// import Home from "./components/user/Home";
+// import About from "./pages/user/About";
+// import MyEvents from "./pages/user/MyEvents";
+// import EventDetail from "./components/user/Event/EventDetail";
+// import Purchase from "./components/user/Purchase";
+
+// import Login from "./pages/Login";
+// import Register from "./pages/Register";
+// import GoogleCallback from "./components/GoogleCallback";
+
+// import Admin from "./pages/admin/Admin";
+// import AdminDashboard from "./pages/admin/AdminDashboard";
+// import Landing from "./components/Landing";
 
 import MainContextProvider from "./context/MainContextProvider";
 
@@ -23,11 +42,18 @@ import UserLoginRoleCheck from "./helper/middleware/UserLoginRoleCheck";
 import IsLoginAndUser from "./helper/middleware/IsLoginAndUser";
 import IsLoginAndAdmin from "./helper/middleware/IsLoginAndAdmin";
 
+import { Suspense } from "react";
+import ManageUsers from "./pages/admin/ManageUsers";
+
 const App = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <Main />,
+      element: (
+        <Suspense fallback={<>...</>}>
+          <Main />
+        </Suspense>
+      ),
       children: [
         {
           path: "/landing",
@@ -108,6 +134,14 @@ const App = () => {
           element: (
             <IsLoginAndAdmin>
               <AdminDashboard />
+            </IsLoginAndAdmin>
+          ),
+        },
+        {
+          path: "users/list",
+          element: (
+            <IsLoginAndAdmin>
+              <ManageUsers />
             </IsLoginAndAdmin>
           ),
         },
