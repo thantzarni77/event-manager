@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Interfaces\AuthRepositoryInterface;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthRepository implements AuthRepositoryInterface
 {
@@ -13,7 +14,7 @@ class AuthRepository implements AuthRepositoryInterface
         $user = User::create([
             'name'     => $data['username'],
             'email'    => $data['email'],
-            'password' => bcrypt($data['password']),
+            'password' => Hash::make($data['password']),
         ]);
 
         $access_token = $user->createToken('normal')->plainTextToken;

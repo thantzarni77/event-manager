@@ -12,12 +12,14 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import GoogleCallback from "./components/GoogleCallback";
 
-import MainContextProvider from "./context/MainContextProvider";
 import Admin from "./pages/admin/Admin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import Landing from "./components/Landing";
 
+import MainContextProvider from "./context/MainContextProvider";
+
+import LoginMiddleware from "./helper/middleware/LoginMiddleware";
 import UserLoginRoleCheck from "./helper/middleware/UserLoginRoleCheck";
-import RegisterMiddleware from "./helper/middleware/RegisterMiddleware";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -25,6 +27,14 @@ const App = () => {
       path: "/",
       element: <Main />,
       children: [
+        {
+          path: "/landing",
+          element: (
+            <LoginMiddleware currentPath="/landing">
+              <Landing />
+            </LoginMiddleware>
+          ),
+        },
         {
           index: true,
           element: <Navigate to="home" replace />,
@@ -45,26 +55,36 @@ const App = () => {
           path: "/login",
           index: true,
           element: (
-            <UserLoginRoleCheck>
+            <LoginMiddleware currentPath="/login">
               <Login />
-            </UserLoginRoleCheck>
+            </LoginMiddleware>
           ),
         },
         {
           path: "/register",
           element: (
-            <RegisterMiddleware>
+            <LoginMiddleware currentPath={"/register"}>
               <Register />
-            </RegisterMiddleware>
+            </LoginMiddleware>
           ),
         },
         { path: "/auth/google", element: <GoogleCallback /> },
       ],
     },
+
     {
       path: "/admin",
       element: <Admin />,
-      children: [{ index: true, element: <AdminDashboard /> }],
+      children: [
+        {
+          index: true,
+          element: (
+            <UserLoginRoleCheck>
+              <AdminDashboard />
+            </UserLoginRoleCheck>
+          ),
+        },
+      ],
     },
   ]);
 

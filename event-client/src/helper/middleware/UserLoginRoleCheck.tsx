@@ -27,7 +27,7 @@ const UserLoginRoleCheck = ({ currentPath, children }: Props) => {
         }
       });
     } else {
-      navigate("/login");
+      navigate("/landing");
     }
   }, [token, navigate, currentPath, user?.role]);
 
