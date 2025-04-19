@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Value } from "./MainContext";
 import { MainContext } from "./MainContext";
-import axiosClient from "../axios-client";
 
 export type User = {
   id: string;
@@ -119,19 +118,6 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const [loginUrl, setLoginUrl] = useState(null);
-
-  useEffect(() => {
-    axiosClient
-      .get("auth")
-      .then(({ data }) => {
-        setLoginUrl(data.url);
-      })
-      .catch((err) => {
-        throw err;
-      });
-  }, []);
-
   const values: Value = {
     theme,
     setTheme,
@@ -140,8 +126,6 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     setUser,
     token,
     setToken,
-    loginUrl,
-    setLoginUrl,
   };
 
   return <MainContext.Provider value={values}>{children}</MainContext.Provider>;

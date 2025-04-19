@@ -20,6 +20,8 @@ import MainContextProvider from "./context/MainContextProvider";
 
 import LoginMiddleware from "./helper/middleware/LoginMiddleware";
 import UserLoginRoleCheck from "./helper/middleware/UserLoginRoleCheck";
+import IsLoginAndUser from "./helper/middleware/IsLoginAndUser";
+import IsLoginAndAdmin from "./helper/middleware/IsLoginAndAdmin";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -48,9 +50,30 @@ const App = () => {
           ),
         },
         { path: "about", element: <About /> },
-        { path: "my-events", element: <MyEvents /> },
-        { path: "events/:id", element: <EventDetail /> },
-        { path: "events/:id/purchase", element: <Purchase /> },
+        {
+          path: "my-events",
+          element: (
+            <IsLoginAndUser>
+              <MyEvents />
+            </IsLoginAndUser>
+          ),
+        },
+        {
+          path: "events/:id",
+          element: (
+            <IsLoginAndUser>
+              <EventDetail />
+            </IsLoginAndUser>
+          ),
+        },
+        {
+          path: "events/:id/purchase",
+          element: (
+            <IsLoginAndUser>
+              <Purchase />
+            </IsLoginAndUser>
+          ),
+        },
         {
           path: "/login",
           index: true,
@@ -74,14 +97,18 @@ const App = () => {
 
     {
       path: "/admin",
-      element: <Admin />,
+      element: (
+        <UserLoginRoleCheck>
+          <Admin />
+        </UserLoginRoleCheck>
+      ),
       children: [
         {
           index: true,
           element: (
-            <UserLoginRoleCheck>
+            <IsLoginAndAdmin>
               <AdminDashboard />
-            </UserLoginRoleCheck>
+            </IsLoginAndAdmin>
           ),
         },
       ],

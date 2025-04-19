@@ -1,4 +1,4 @@
-import { createRef, useContext, useState } from "react";
+import { createRef, useContext, useEffect, useState } from "react";
 import { LuLogIn } from "react-icons/lu";
 import { Link, useNavigate } from "react-router";
 import LoginWithGoogle from "../components/LoginWithGoogle";
@@ -13,7 +13,7 @@ const Register = () => {
     password_confirmation: string[];
   };
 
-  const { token, setToken, setUser, loginUrl } = useContext(MainContext);
+  const { token, setToken, setUser } = useContext(MainContext);
 
   const navigate = useNavigate();
 
@@ -24,6 +24,20 @@ const Register = () => {
   const emailRef = createRef<HTMLInputElement>();
   const passwordRef = createRef<HTMLInputElement>();
   const confirmPasswordRef = createRef<HTMLInputElement>();
+
+  //fetch google login url
+  const [loginUrl, setLoginUrl] = useState("");
+
+  useEffect(() => {
+    axiosClient
+      .get("auth")
+      .then(({ data }) => {
+        setLoginUrl(data.url);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }, []);
 
   const registerUserHandler = (event: React.FormEvent) => {
     setLoading(true);

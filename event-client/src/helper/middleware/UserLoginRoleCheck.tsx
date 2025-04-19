@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { MainContext } from "../../context/MainContext";
 import axiosClient from "../../axios-client";
@@ -12,6 +12,7 @@ const UserLoginRoleCheck = ({ currentPath, children }: Props) => {
   const navigate = useNavigate();
   const { user } = useContext(MainContext);
   const token = localStorage.getItem("access_token");
+  const isOkay = useRef(false);
 
   useEffect(() => {
     if (token) {
@@ -25,13 +26,17 @@ const UserLoginRoleCheck = ({ currentPath, children }: Props) => {
             navigate("/admin");
             break;
         }
+        isOkay.current = true;
       });
     } else {
       navigate("/landing");
+      isOkay.current = true;
     }
   }, [token, navigate, currentPath, user?.role]);
 
-  return <>{children}</>;
+  if (isOkay.current) {
+    return <>{children}</>;
+  }
 };
 
 export default UserLoginRoleCheck;

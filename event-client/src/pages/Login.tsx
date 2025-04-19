@@ -1,4 +1,4 @@
-import { createRef, useContext, useState } from "react";
+import { createRef, useContext, useEffect, useState } from "react";
 import { LuLogIn } from "react-icons/lu";
 import { Link, useNavigate } from "react-router";
 import LoginWithGoogle from "../components/LoginWithGoogle";
@@ -6,7 +6,7 @@ import { MainContext } from "../context/MainContext";
 import axiosClient from "../axios-client";
 
 const Login = () => {
-  const { token, loginUrl, setToken, setUser } = useContext(MainContext);
+  const { token, setToken, setUser } = useContext(MainContext);
   const [error, setError] = useState<string | undefined | null>();
   const [loading, setLoading] = useState(false);
 
@@ -14,6 +14,20 @@ const Login = () => {
 
   const emailRef = createRef<HTMLInputElement>();
   const passwordRef = createRef<HTMLInputElement>();
+
+  //fetch google login url
+  const [loginUrl, setLoginUrl] = useState("");
+
+  useEffect(() => {
+    axiosClient
+      .get("auth")
+      .then(({ data }) => {
+        setLoginUrl(data.url);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }, []);
 
   const loginHandler = (event: React.FormEvent) => {
     setLoading(true);

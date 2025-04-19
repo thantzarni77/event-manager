@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 
 type Props = {
@@ -9,27 +9,21 @@ type Props = {
 const LoginMiddleware = ({ currentPath, children }: Props) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("access_token");
+  const isOkay = useRef(false);
 
   useEffect(() => {
     if (token) {
-      // axiosClient.get("/user").then(({ data }) => {
-      //   switch (data?.role) {
-      //     case "user":
-      //       navigate("/home");
-      //       break;
-
-      //     default:
-      //       navigate("/admin");
-      //       break;
-      //   }
-      // });
       navigate(-1);
+      isOkay.current = true;
     } else {
       navigate(`${currentPath}`);
+      isOkay.current = true;
     }
   }, [token, navigate, currentPath]);
 
-  return <>{children}</>;
+  if (isOkay.current) {
+    return <>{children}</>;
+  }
 };
 
 export default LoginMiddleware;

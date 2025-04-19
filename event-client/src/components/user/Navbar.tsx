@@ -106,34 +106,11 @@ const Navbar = () => {
           </label>
         </div>
 
-        {/* search button */}
-        <button className="btn btn-ghost btn-circle">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            {" "}
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />{" "}
-          </svg>
-        </button>
-
-        {/* notification */}
-        <div className="dropdown dropdown-end">
-          <button
-            className="btn btn-ghost btn-circle"
-            tabIndex={0}
-            role="button"
-          >
-            {" "}
-            <div className="indicator">
+        {/* show user releated features only when loginned */}
+        {user && (
+          <>
+            {/* search button */}
+            <button className="btn btn-ghost btn-circle">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -146,88 +123,117 @@ const Navbar = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />{" "}
               </svg>
-              <span className="badge badge-xs badge-primary indicator-item"></span>
-            </div>
-          </button>
+            </button>
 
-          <div
-            tabIndex={0}
-            className="dropdown-content card card-sm bg-base-100 z-1 w-80 shadow-md lg:w-96"
-          >
-            {/* notification section */}
-            <div className="card-body flex flex-col items-center">
-              <div className="flex w-full items-center">
-                <div className="badge badge-secondary badge-sm text-base font-bold">
-                  1
+            {/* notification */}
+            <div className="dropdown dropdown-end">
+              <button
+                className="btn btn-ghost btn-circle"
+                tabIndex={0}
+                role="button"
+              >
+                {" "}
+                <div className="indicator">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    {" "}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    />{" "}
+                  </svg>
+                  <span className="badge badge-xs badge-primary indicator-item"></span>
                 </div>
+              </button>
 
-                <p className="text-end hover:cursor-pointer">
-                  Mark all as read
-                </p>
+              <div
+                tabIndex={0}
+                className="dropdown-content card card-sm bg-base-100 z-1 w-80 shadow-md lg:w-96"
+              >
+                {/* notification section */}
+                <div className="card-body flex flex-col items-center">
+                  <div className="flex w-full items-center">
+                    <div className="badge badge-secondary badge-sm text-base font-bold">
+                      1
+                    </div>
+
+                    <p className="text-end hover:cursor-pointer">
+                      Mark all as read
+                    </p>
+                  </div>
+                  <hr className="w-full text-gray-500" />
+
+                  {/* notification messages */}
+                  <div className="flex w-full flex-col items-center gap-2">
+                    <div className="card bg-base-300 border-info hover:bg-base-200 w-full rounded border-b-1 p-2 hover:cursor-pointer">
+                      <p>1d ago</p>
+                      <p className="text-[14px]">
+                        Lorem ipsum dolor sit, amet consectetur adipisicing
+                        elit. Maiores autem accusamus obcaecati, laboriosam
+                        eveniet
+                      </p>
+                    </div>
+
+                    <div className="card bg-base-100 hover:bg-base-200 w-full rounded border-b-1 p-2 hover:cursor-pointer">
+                      <p>2d ago</p>
+                      <p className="text-[14px]">Hello Test Message</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <hr className="w-full text-gray-500" />
+            </div>
 
-              {/* notification messages */}
-              <div className="flex w-full flex-col items-center gap-2">
-                <div className="card bg-base-300 border-info hover:bg-base-200 w-full rounded border-b-1 p-2 hover:cursor-pointer">
-                  <p>1d ago</p>
-                  <p className="text-[14px]">
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                    Maiores autem accusamus obcaecati, laboriosam eveniet
-                  </p>
-                </div>
+            <span>{user?.name}</span>
 
-                <div className="card bg-base-100 hover:bg-base-200 w-full rounded border-b-1 p-2 hover:cursor-pointer">
-                  <p>2d ago</p>
-                  <p className="text-[14px]">Hello Test Message</p>
+            {/* Profile Dropdown */}
+            <div className="dropdown dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar"
+              >
+                <div className="w-8 rounded-full">
+                  <img
+                    alt="Tailwind CSS Navbar component"
+                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                  />
                 </div>
               </div>
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+              >
+                <li>
+                  <a className="text-base">Profile</a>
+                </li>
+                <li>
+                  <Link className="text-base" to={"my-events"}>
+                    My Events
+                  </Link>
+                </li>
+
+                <li>
+                  <a className="text-base">Settings</a>
+                </li>
+                <li>
+                  <a className="text-base" onClick={logoutController}>
+                    Logout
+                  </a>
+                </li>
+              </ul>
             </div>
-          </div>
-        </div>
-
-        <span>{user?.name}</span>
-
-        {/* Profile Dropdown */}
-        <div className="dropdown dropdown-end">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-ghost btn-circle avatar"
-          >
-            <div className="w-8 rounded-full">
-              <img
-                alt="Tailwind CSS Navbar component"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-              />
-            </div>
-          </div>
-          <ul
-            tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-          >
-            <li>
-              <a className="text-base">Profile</a>
-            </li>
-            <li>
-              <Link className="text-base" to={"my-events"}>
-                My Events
-              </Link>
-            </li>
-
-            <li>
-              <a className="text-base">Settings</a>
-            </li>
-            <li>
-              <a className="text-base" onClick={logoutController}>
-                Logout
-              </a>
-            </li>
-          </ul>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );
