@@ -4,11 +4,10 @@ import { MainContext } from "../../context/MainContext";
 import axiosClient from "../../axios-client";
 
 type Props = {
-  currentPath?: string;
   children?: React.ReactNode;
 };
 
-const UserLoginRoleCheck = ({ currentPath, children }: Props) => {
+const UserLoginRoleCheck = ({ children }: Props) => {
   const navigate = useNavigate();
   const { user } = useContext(MainContext);
   const token = localStorage.getItem("access_token");
@@ -23,7 +22,7 @@ const UserLoginRoleCheck = ({ currentPath, children }: Props) => {
             break;
 
           default:
-            navigate("/admin");
+            navigate("/admin/dashboard");
             break;
         }
         isOkay.current = true;
@@ -32,7 +31,7 @@ const UserLoginRoleCheck = ({ currentPath, children }: Props) => {
       navigate("/landing");
       isOkay.current = true;
     }
-  }, [token, navigate, currentPath, user?.role]);
+  }, [token, navigate, user?.role]);
 
   if (isOkay.current) {
     return <>{children}</>;

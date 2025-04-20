@@ -1,38 +1,41 @@
 import { BiLogOut } from "react-icons/bi";
 import { MdManageAccounts } from "react-icons/md";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import axiosClient from "../../axios-client";
 import { useContext } from "react";
 import { MainContext } from "../../context/MainContext";
 
 const Dock = () => {
-  const { setToken, setUser } = useContext(MainContext);
+  const { setToken, setUser, user } = useContext(MainContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const logoutController = () => {
     axiosClient.get("user/destroy").then((response) => {
       if (response.status === 204) {
         setToken(null);
         setUser(null);
-        navigate("/login");
+        navigate("/landing");
       }
     });
   };
 
-  const dockItemClass = `
-    relative flex h-12 w-12 items-center justify-center 
-    rounded-xl transition-all duration-200 ease-out 
-    hover:-translate-y-1 hover:scale-110 hover:shadow-md 
-    hover:bg-base-200
-  `;
+  const currentPath = location.pathname;
+
+  const dockItemClass = (isActive: boolean) =>
+    `relative flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-200 ease-out hover:scale-110 hover:-translate-y-1
+   ${isActive ? "bg-primary text-black shadow-lg" : ""}`;
 
   return (
     <div className="fixed bottom-0 left-1/2 z-50 w-full -translate-x-1/2">
-      <div className="bg-base-100 flex items-end justify-center gap-3 px-3 py-1 shadow-lg backdrop-blur-md sm:gap-4 sm:px-4 sm:py-2">
+      <div className="bg-base-300 flex items-end justify-center gap-3 px-3 py-1 shadow-lg backdrop-blur-md sm:gap-4 sm:px-4 sm:py-2">
         <ul className="flex gap-3 sm:gap-4">
           {/* Home */}
           <li className="tooltip tooltip-top" data-tip="Home">
-            <Link to={""} className={dockItemClass}>
+            <Link
+              to={"dashboard"}
+              className={dockItemClass(currentPath == "/admin/dashboard")}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6 lg:h-8 lg:w-8"
@@ -51,15 +54,20 @@ const Dock = () => {
           </li>
 
           {/* Manage Users */}
-          <li className="tooltip tooltip-top" data-tip="Manage Users">
-            <Link to="users/list" className={dockItemClass}>
-              <MdManageAccounts className="text-2xl lg:text-[32px]" />
-            </Link>
-          </li>
+          {user?.role == "superadmin" && (
+            <li className="tooltip tooltip-top" data-tip="Manage Users">
+              <Link
+                to="users/list"
+                className={dockItemClass(currentPath == "/admin/users/list")}
+              >
+                <MdManageAccounts className="text-2xl lg:text-[32px]" />
+              </Link>
+            </li>
+          )}
 
           {/* Details */}
           <li className="tooltip tooltip-top" data-tip="Details">
-            <a className={dockItemClass}>
+            <a className={dockItemClass(currentPath == "/")}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6 lg:h-8 lg:w-8"
@@ -79,7 +87,7 @@ const Dock = () => {
 
           {/* Stats */}
           <li className="tooltip tooltip-top" data-tip="Stats">
-            <a className={dockItemClass}>
+            <a className={dockItemClass(currentPath == "/")}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6 lg:h-8 lg:w-8"
@@ -99,7 +107,10 @@ const Dock = () => {
 
           {/* Logout */}
           <li className="tooltip tooltip-top" data-tip="Logout">
-            <button onClick={logoutController} className={dockItemClass}>
+            <button
+              onClick={logoutController}
+              className={dockItemClass(currentPath == "")}
+            >
               <BiLogOut className="text-2xl lg:text-[32px]" />
             </button>
           </li>

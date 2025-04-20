@@ -20,7 +20,7 @@ const Navbar = () => {
       if (response.status == 204) {
         setToken(null);
         setUser(null);
-        navigate("/login");
+        navigate("/landing");
       }
     });
   };

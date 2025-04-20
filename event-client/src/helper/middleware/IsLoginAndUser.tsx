@@ -4,7 +4,6 @@ import axiosClient from "../../axios-client";
 
 type Props = {
   children?: React.ReactNode;
-  currentPath?: string;
 };
 
 const IsLoginAndUser = ({ children }: Props) => {
@@ -19,7 +18,7 @@ const IsLoginAndUser = ({ children }: Props) => {
     if (token) {
       axiosClient.get("/user").then(({ data }) => {
         if (data.role != "user") {
-          navigate("/admin");
+          navigate("/admin/dashboard");
         }
       });
     }

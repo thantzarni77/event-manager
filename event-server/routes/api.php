@@ -12,10 +12,27 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         return $request->user();
     });
 
-    Route::get("/users/list", [UserController::class, 'list']);
+    Route::group(['prefix' => "user"], function () {
+        //user logout
+        Route::get('/destroy', [AuthController::class, 'logout']);
 
-    //user logout
-    Route::get('/user/destroy', [AuthController::class, 'logout']);
+        Route::middleware('superAdminMiddleware')->group(function () {
+            //promote user
+            Route::post('/role-change', [UserController::class, 'roleChange']);
+
+        });
+
+    });
+
+    Route::group(['prefix' => "users"], function () {
+
+        //get all users
+        Route::get("/list", [UserController::class, 'list']);
+
+        //search users
+        Route::post("/list/search", [UserController::class, 'search']);
+
+    });
 
 });
 

@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { createRef, useEffect, useState } from "react";
 import axiosClient from "../../axios-client";
 import { ScaleLoader } from "react-spinners";
+import { FaSearch } from "react-icons/fa";
+import { MdFilterAltOff } from "react-icons/md";
 
-const UserData = React.lazy(() => import("../../components/admin/UserData"));
+import UserData from "../../components/admin/UserData";
 
 type User = {
   id: number;
@@ -14,18 +16,83 @@ type User = {
 };
 
 const ManageUsers = () => {
-  const [users, setUsers] = useState<User[] | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
+  const userSearchRef = createRef<HTMLInputElement>();
+
+  //get all users from db
+  const getAllUsers = () => {
+    axiosClient.get("/users/list").then(({ data }) => {
+      setUsers(data.users);
+    });
+  };
 
   useEffect(() => {
     setLoading(true);
-    axiosClient.get("/users/list").then(({ data }) => {
-      setUsers(data.users);
+    getAllUsers();
+    setLoading(false);
+  }, []);
+
+  //function to handle user searching
+  const userSearchHandler = (e: React.FormEvent) => {
+    setLoading(true);
+    e.preventDefault();
+
+    const payload = {
+      searchKey: userSearchRef.current?.value,
+    };
+
+    axiosClient.post("/users/list/search", payload).then(({ data }) => {
+      setUsers(data.searchedUsers);
       setLoading(false);
     });
-  }, []);
+  };
+
   return (
-    <div className="mx-auto my-4 w-[90%]">
+    <div className="mx-auto my-4 min-h-screen w-[90%]">
+      {/* search users */}
+      <form
+        method="GET"
+        onSubmit={userSearchHandler}
+        className="flex items-center gap-4"
+      >
+        <label className="input">
+          <svg
+            className="h-[1em] opacity-50"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <g
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              strokeWidth="2.5"
+              fill="none"
+              stroke="currentColor"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </g>
+          </svg>
+          <input
+            type="search"
+            className="grow"
+            placeholder="Search user's name"
+            ref={userSearchRef}
+            value={userSearchRef.current?.value}
+          />
+        </label>
+        <button disabled={loading} type="submit" className="btn btn-primary">
+          <FaSearch />
+        </button>
+        <button
+          disabled={loading}
+          type="button"
+          className="btn btn-error"
+          onClick={getAllUsers}
+        >
+          <MdFilterAltOff />
+        </button>
+      </form>
       {loading ? (
         <div>
           {" "}
@@ -35,31 +102,6 @@ const ManageUsers = () => {
         </div>
       ) : (
         <>
-          <form className="flex items-center gap-4">
-            <label className="input">
-              <svg
-                className="h-[1em] opacity-50"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-              >
-                <g
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  strokeWidth="2.5"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.3-4.3"></path>
-                </g>
-              </svg>
-              <input type="search" className="grow" placeholder="Search" />
-            </label>
-            <button type="submit" className="btn btn-primary">
-              Search
-            </button>
-          </form>
-
           <div className="overflow-x-auto">
             <table className="table">
               {/* head */}
@@ -72,17 +114,23 @@ const ManageUsers = () => {
                 </tr>
               </thead>
               <tbody>
-                {users?.map((user) => {
-                  return (
-                    <UserData
-                      key={user.id}
-                      name={user.name}
-                      role={user.role}
-                      profile={user.profile}
-                      loginMethod={user.provider}
-                    />
-                  );
-                })}
+                {users.length > 0 ? (
+                  users?.map((user) => {
+                    return (
+                      <UserData
+                        key={user.id}
+                        id={user.id}
+                        name={user.name}
+                        role={user.role}
+                        profile={user.profile}
+                        loginMethod={user.provider}
+                        getAllUsers={getAllUsers}
+                      />
+                    );
+                  })
+                ) : (
+                  <p className="text-black">"No Users"</p>
+                )}
               </tbody>
             </table>
           </div>

@@ -19,31 +19,15 @@ const Admin = React.lazy(() => import("./pages/admin/Admin"));
 const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
 const Landing = React.lazy(() => import("./components/Landing"));
 
-// import Main from "./layout/Main";
-
-// import Home from "./components/user/Home";
-// import About from "./pages/user/About";
-// import MyEvents from "./pages/user/MyEvents";
-// import EventDetail from "./components/user/Event/EventDetail";
-// import Purchase from "./components/user/Purchase";
-
-// import Login from "./pages/Login";
-// import Register from "./pages/Register";
-// import GoogleCallback from "./components/GoogleCallback";
-
-// import Admin from "./pages/admin/Admin";
-// import AdminDashboard from "./pages/admin/AdminDashboard";
-// import Landing from "./components/Landing";
-
 import MainContextProvider from "./context/MainContextProvider";
 
 import LoginMiddleware from "./helper/middleware/LoginMiddleware";
 import UserLoginRoleCheck from "./helper/middleware/UserLoginRoleCheck";
 import IsLoginAndUser from "./helper/middleware/IsLoginAndUser";
-import IsLoginAndAdmin from "./helper/middleware/IsLoginAndAdmin";
 
 import { Suspense } from "react";
 import ManageUsers from "./pages/admin/ManageUsers";
+import IsLoginAndAdmin from "./helper/middleware/IsLoginAndAdmin";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -123,14 +107,11 @@ const App = () => {
 
     {
       path: "/admin",
-      element: (
-        <UserLoginRoleCheck>
-          <Admin />
-        </UserLoginRoleCheck>
-      ),
+      element: <Admin />,
       children: [
         {
           index: true,
+          path: "dashboard",
           element: (
             <IsLoginAndAdmin>
               <AdminDashboard />

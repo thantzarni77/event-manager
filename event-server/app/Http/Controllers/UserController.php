@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\UserRepositoryInterface;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -14,5 +15,15 @@ class UserController extends Controller
     public function list()
     {
         return $this->userRepositoryInterface->list();
+    }
+
+    public function search(Request $request)
+    {
+        return $this->userRepositoryInterface->search($request);
+    }
+
+    public function roleChange(Request $request)
+    {
+        return $this->userRepositoryInterface->roleChange($request);
     }
 }
