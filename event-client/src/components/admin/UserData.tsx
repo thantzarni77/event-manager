@@ -1,7 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { MainContext } from "../../context/MainContext";
-import { FaDownLong, FaUpLong } from "react-icons/fa6";
+import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import axiosClient from "../../axios-client";
+import { IoEyeOutline } from "react-icons/io5";
 
 type Props = {
   id: number | string;
@@ -36,6 +37,17 @@ const UserData = ({
       getAllUsers();
     });
   };
+
+  const promoteModalRef = useRef<HTMLDialogElement>(null);
+  const demoteModalRef = useRef<HTMLDialogElement>(null);
+
+  const openPromoteDialog = () => {
+    promoteModalRef.current?.showModal();
+  };
+
+  const openDemoteDialog = () => {
+    demoteModalRef.current?.showModal();
+  };
   return (
     <>
       <tr>
@@ -59,37 +71,89 @@ const UserData = ({
         <td className="text-neutral">
           <div className="flex items-center gap-2">
             <span>{role}</span>
-            {id != user?.id && (
-              <>
-                {role != "admin" && (
-                  <button
-                    disabled={loading}
-                    type="button"
-                    className="tooltip tooltip-top"
-                    data-tip="promote"
-                    onClick={() => roleChangeHandler("promote")}
-                  >
-                    <FaUpLong className="bg-success rounded-full p-1 text-[26px] hover:cursor-pointer" />
-                  </button>
-                )}
-                {role != "user" && (
-                  <button
-                    disabled={loading}
-                    type="button"
-                    className="tooltip tooltip-top"
-                    data-tip="demote"
-                    onClick={() => roleChangeHandler("demote")}
-                  >
-                    <FaDownLong className="bg-error rounded-full p-1 text-[26px] hover:cursor-pointer" />
-                  </button>
-                )}
-              </>
-            )}
           </div>
         </td>
         <td className="text-neutral">{loginMethod}</td>
-        <th>
-          <button className="btn btn-sm btn-info">details</button>
+        <th className="flex items-center gap-2">
+          {id != user?.id && (
+            <>
+              {role != "admin" && (
+                <>
+                  <button
+                    disabled={loading}
+                    type="button"
+                    onClick={openPromoteDialog}
+                    className="btn btn-sm btn-success"
+                  >
+                    <FaArrowUpLong className="text-[18px]" />
+                  </button>
+                  <dialog
+                    ref={promoteModalRef}
+                    className="modal modal-bottom sm:modal-middle"
+                  >
+                    <div className="modal-box">
+                      <h3 className="text-lg font-bold">Attention !</h3>
+                      <p className="py-4">
+                        Are you sure you want to promote this user ?
+                      </p>
+                      <div className="modal-action">
+                        <form method="dialog">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => roleChangeHandler("promote")}
+                              className="btn btn-success"
+                            >
+                              Yes
+                            </button>
+                            <button className="btn btn-error">No</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </dialog>
+                </>
+              )}
+              {role != "user" && (
+                <>
+                  <button
+                    disabled={loading}
+                    type="button"
+                    onClick={openDemoteDialog}
+                    className="btn btn-sm btn-error"
+                  >
+                    <FaArrowDownLong className="text-[18px]" />
+                  </button>
+                  <dialog
+                    ref={demoteModalRef}
+                    className="modal modal-bottom sm:modal-middle"
+                  >
+                    <div className="modal-box">
+                      <h3 className="text-lg font-bold">Attention !</h3>
+                      <p className="py-4">
+                        Are you sure you want to demote this user ?
+                      </p>
+                      <div className="modal-action">
+                        <form method="dialog">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => roleChangeHandler("demote")}
+                              className="btn btn-success"
+                            >
+                              Yes
+                            </button>
+                            <button className="btn btn-error">No</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </dialog>
+                </>
+              )}
+            </>
+          )}
+          <button className="btn btn-sm btn-info">
+            <IoEyeOutline className="text-[18px]" />
+          </button>
         </th>
       </tr>
     </>

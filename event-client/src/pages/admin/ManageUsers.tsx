@@ -129,7 +129,9 @@ const ManageUsers = () => {
                     );
                   })
                 ) : (
-                  <p className="text-black">"No Users"</p>
+                  <tr>
+                    <td>No user</td>
+                  </tr>
                 )}
               </tbody>
             </table>

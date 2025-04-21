@@ -123,7 +123,7 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     axiosClient.get("user").then(({ data }) => {
       setUser(data);
     });
-  }, [user]);
+  }, []);
 
   const values: Value = {
     theme,
