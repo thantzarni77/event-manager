@@ -28,13 +28,14 @@ import IsLoginAndUser from "./helper/middleware/IsLoginAndUser";
 import { Suspense } from "react";
 import ManageUsers from "./pages/admin/ManageUsers";
 import IsLoginAndAdmin from "./helper/middleware/IsLoginAndAdmin";
+import Payments from "./pages/admin/Payments";
 
 const App = () => {
   const router = createBrowserRouter([
     {
       path: "/",
       element: (
-        <Suspense fallback={<>...</>}>
+        <Suspense fallback={<></>}>
           <Main />
         </Suspense>
       ),
@@ -110,7 +111,6 @@ const App = () => {
       element: <Admin />,
       children: [
         {
-          index: true,
           path: "dashboard",
           element: (
             <IsLoginAndAdmin>
@@ -119,10 +119,22 @@ const App = () => {
           ),
         },
         {
+          index: true,
+          element: <Navigate to="/admin/dashboard" replace />,
+        },
+        {
           path: "users/list",
           element: (
             <IsLoginAndAdmin>
               <ManageUsers />
+            </IsLoginAndAdmin>
+          ),
+        },
+        {
+          path: "payments",
+          element: (
+            <IsLoginAndAdmin>
+              <Payments />
             </IsLoginAndAdmin>
           ),
         },

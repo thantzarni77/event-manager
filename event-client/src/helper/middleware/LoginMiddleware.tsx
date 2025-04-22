@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 
 type Props = {
-  children?: React.ReactNode;
+  children: React.ReactNode;
   currentPath?: string;
 };
 

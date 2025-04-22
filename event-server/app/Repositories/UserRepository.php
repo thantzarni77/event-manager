@@ -14,9 +14,15 @@ class UserRepository implements UserRepositoryInterface
 
     public function search($request)
     {
+        $type      = $request['type'];
         $searchKey = $request['searchKey'];
 
-        $searchedUsers = User::where('name', 'like', '%' . $searchKey . '%')->get();
+        if ($type == "filter") {
+            $searchedUsers = User::where('role', $searchKey)->get();
+        } else {
+            $searchedUsers = User::where('name', 'like', '%' . $searchKey . '%')->get();
+
+        }
 
         return response(compact('searchedUsers'));
     }

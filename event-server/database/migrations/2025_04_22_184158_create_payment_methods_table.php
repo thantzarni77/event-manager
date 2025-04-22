@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
+            $table->string("account_type");
+            $table->string("account_no");
+            $table->string("account_name");
+
             $table->timestamps();
         });
     }

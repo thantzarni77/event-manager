@@ -9,12 +9,10 @@ const Main = () => {
     <div className="flex min-h-screen flex-col">
       {/* <ScrollRestoration /> */}
       <ScrollToTop />
-      {/* {user?.role == "user" && <Navbar />} */}
       <Navbar />
       <span className="flex-1">
         <Outlet />
       </span>
-      {/* {user?.role == "user" && <Footer />} */}
       <Footer />
     </div>
   );

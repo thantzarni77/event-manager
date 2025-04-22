@@ -4,7 +4,7 @@ import { MainContext } from "../../context/MainContext";
 import axiosClient from "../../axios-client";
 
 type Props = {
-  children?: React.ReactNode;
+  children: React.ReactNode;
 };
 
 const UserLoginRoleCheck = ({ children }: Props) => {

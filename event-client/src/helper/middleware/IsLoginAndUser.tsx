@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import axiosClient from "../../axios-client";
 
 type Props = {
-  children?: React.ReactNode;
+  children: React.ReactNode;
 };
 
 const IsLoginAndUser = ({ children }: Props) => {
