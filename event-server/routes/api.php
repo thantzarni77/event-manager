@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GoogleLoginController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -10,6 +11,15 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/user', function (Request $request) {
         return $request->user();
+    });
+
+    Route::group(['prefix' => "payment"], function () {
+        //get all payment methods
+        Route::get('/list', [PaymentMethodController::class, 'listPayment']);
+
+        //add payment methods
+        Route::post('/add', [PaymentMethodController::class, 'addPayment']);
+
     });
 
     Route::group(['prefix' => "user"], function () {

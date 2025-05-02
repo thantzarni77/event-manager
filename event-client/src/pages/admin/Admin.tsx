@@ -8,7 +8,7 @@ const Dock = React.lazy(() => import("../../components/admin/Dock"));
 
 const Admin = () => {
   return (
-    <div className="min-h-screen w-full bg-gray-100">
+    <div className="min-h-screen w-full">
       <Suspense fallback={<></>}>
         <TopBar />
         <Outlet />

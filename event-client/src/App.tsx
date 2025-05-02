@@ -17,6 +17,12 @@ const GoogleCallback = React.lazy(() => import("./components/GoogleCallback"));
 
 const Admin = React.lazy(() => import("./pages/admin/Admin"));
 const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
+const Organizations = React.lazy(
+  () => import("./components/admin/Organizations"),
+);
+const PaymentMethods = React.lazy(() => import("./pages/admin/PaymentMethods"));
+const ManageUsers = React.lazy(() => import("./pages/admin/ManageUsers"));
+
 const Landing = React.lazy(() => import("./components/Landing"));
 
 import MainContextProvider from "./context/MainContextProvider";
@@ -24,11 +30,9 @@ import MainContextProvider from "./context/MainContextProvider";
 import LoginMiddleware from "./helper/middleware/LoginMiddleware";
 import UserLoginRoleCheck from "./helper/middleware/UserLoginRoleCheck";
 import IsLoginAndUser from "./helper/middleware/IsLoginAndUser";
+import IsLoginAndAdmin from "./helper/middleware/IsLoginAndAdmin";
 
 import { Suspense } from "react";
-import ManageUsers from "./pages/admin/ManageUsers";
-import IsLoginAndAdmin from "./helper/middleware/IsLoginAndAdmin";
-import Payments from "./pages/admin/Payments";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -131,10 +135,18 @@ const App = () => {
           ),
         },
         {
-          path: "payments",
+          path: "orgs/list",
           element: (
             <IsLoginAndAdmin>
-              <Payments />
+              <Organizations />
+            </IsLoginAndAdmin>
+          ),
+        },
+        {
+          path: "payment-methods",
+          element: (
+            <IsLoginAndAdmin>
+              <PaymentMethods />
             </IsLoginAndAdmin>
           ),
         },

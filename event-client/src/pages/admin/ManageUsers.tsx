@@ -153,14 +153,14 @@ const ManageUsers = () => {
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto">
+          <div className="my-6 min-h-screen overflow-x-auto">
             <table className="table">
               {/* head */}
               <thead>
                 <tr>
-                  <th className="text-neutral">Name</th>
-                  <th className="text-neutral">Role</th>
-                  <th className="text-neutral">Login Method</th>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>Login Method</th>
                   <th></th>
                 </tr>
               </thead>
@@ -177,11 +177,14 @@ const ManageUsers = () => {
                         loginMethod={user.provider}
                         getAllUsers={getAllUsers}
                       />
+                      // <tr>
+                      //   <td>Test</td>
+                      // </tr>
                     );
                   })
                 ) : (
                   <tr>
-                    <td className="text-neutral">No user</td>
+                    <td className="text-white">No user</td>
                   </tr>
                 )}
               </tbody>

@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 import axiosClient from "../../axios-client";
 import { useContext } from "react";
 import { MainContext } from "../../context/MainContext";
+import { VscOrganization } from "react-icons/vsc";
 
 const Dock = () => {
   const { setToken, setUser, user } = useContext(MainContext);
@@ -65,12 +66,26 @@ const Dock = () => {
             </li>
           )}
 
+          {/* Manage Organizations */}
+          {user?.role == "superadmin" && (
+            <li className="tooltip tooltip-top" data-tip="Manage Organizations">
+              <Link
+                to="orgs/list"
+                className={dockItemClass(currentPath == "/admin/orgs/list")}
+              >
+                <VscOrganization className="text-2xl lg:text-[32px]" />
+              </Link>
+            </li>
+          )}
+
           {/* Details */}
           {user?.role == "superadmin" && (
             <li className="tooltip tooltip-top" data-tip="Payments">
               <Link
-                to="payments"
-                className={dockItemClass(currentPath == "/admin/payments")}
+                to="payment-methods"
+                className={dockItemClass(
+                  currentPath == "/admin/payment-methods",
+                )}
               >
                 <MdOutlinePayment className="text-2xl lg:text-[32px]" />
               </Link>

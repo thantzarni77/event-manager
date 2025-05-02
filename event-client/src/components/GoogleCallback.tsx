@@ -33,7 +33,7 @@ const GoogleCallback = () => {
         setToken(data.access_token);
       })
       .then(() => {
-        navigate("/");
+        navigate("/home");
       });
   }, [location.search, setUser, data, setToken, navigate, user]);
 

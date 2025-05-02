@@ -37,19 +37,15 @@ class UserRepository implements UserRepositoryInterface
         if ($changeType == "promote") {
             switch ($currentRole) {
                 case 'user':
-                    User::where('id', $userID)->update(['role' => 'org']);
-                    break;
-                case 'org':
                     User::where('id', $userID)->update(['role' => 'admin']);
+                    break;
             }
 
         } else {
             switch ($currentRole) {
                 case 'admin':
-                    User::where('id', $userID)->update(['role' => 'org']);
-                    break;
-                case 'org':
                     User::where('id', $userID)->update(['role' => 'user']);
+                    break;
             }
 
         }
