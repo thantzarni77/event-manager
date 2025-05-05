@@ -9,14 +9,22 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface
 {
     public function listPayment()
     {
-        $payments = PaymentMethod::select('account_no', 'account_type', 'account_name')->get();
+        $payments = PaymentMethod::select('id', 'account_no', 'account_type', 'account_name')->get();
 
         return response(compact('payments'));
     }
 
+    public function singlePaymentInfo($id)
+    {
+        $singlePayment = PaymentMethod::where('id', $id)->select('id', 'account_no', 'account_type', 'account_name')->first();
+
+        return response(compact('singlePayment'));
+
+    }
+
     public function addPayment($request)
     {
-        $this->checkValidation($request);
+        $this->checkValidation($request, 'add');
 
         PaymentMethod::create([
             'account_type' => $request->account_type,
@@ -27,11 +35,31 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface
         return response(201);
     }
 
+    public function updatePayment($request)
+    {
+        $this->checkValidation($request, 'update');
+
+        PaymentMethod::where('id', $request->paymentID)->update([
+            'account_type' => $request->account_type,
+            'account_no'   => $request->account_no,
+            'account_name' => $request->account_name,
+        ]);
+
+        return response(201);
+    }
+
+    public function deletePayment($request)
+    {
+        PaymentMethod::where('id', $request['payment_id'])->delete();
+
+        return response(200);
+    }
+
     //check validation
-    private function checkValidation($request)
+    private function checkValidation($request, $action)
     {
         $rules = [
-            'account_no'   => "required|min:5|max:10",
+            'account_no'   => "required|min:5|max:12",
             'account_name' => 'required|max:20',
             "account_type" => "required",
         ];
@@ -51,6 +79,15 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface
             ->first();
 
         if ($exactRecord) {
+            if ($action == 'update') {
+
+                // allow self to update with exact record
+                $id = $$exactRecord['id'];
+
+                if ($id == $request->paymentID) {
+                    return;
+                }
+            }
 
             throw ValidationException::withMessages(
                 ['account_name' => 'This name already exists',

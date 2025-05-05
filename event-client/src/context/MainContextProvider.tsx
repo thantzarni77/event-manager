@@ -120,10 +120,12 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    axiosClient.get("user").then(({ data }) => {
-      setUser(data);
-    });
-  }, []);
+    if (token) {
+      axiosClient.get("user").then(({ data }) => {
+        setUser(data);
+      });
+    }
+  }, [token]);
 
   const values: Value = {
     theme,

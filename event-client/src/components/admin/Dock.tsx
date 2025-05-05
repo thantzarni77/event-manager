@@ -80,7 +80,7 @@ const Dock = () => {
 
           {/* Details */}
           {user?.role == "superadmin" && (
-            <li className="tooltip tooltip-top" data-tip="Payments">
+            <li className="tooltip tooltip-top" data-tip="Payment Methods">
               <Link
                 to="payment-methods"
                 className={dockItemClass(

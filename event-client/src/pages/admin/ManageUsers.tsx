@@ -177,9 +177,6 @@ const ManageUsers = () => {
                         loginMethod={user.provider}
                         getAllUsers={getAllUsers}
                       />
-                      // <tr>
-                      //   <td>Test</td>
-                      // </tr>
                     );
                   })
                 ) : (

@@ -13,12 +13,21 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         return $request->user();
     });
 
-    Route::group(['prefix' => "payment"], function () {
+    Route::group(['prefix' => "payment", 'middleware' => 'superAdminMiddleware'], function () {
         //get all payment methods
         Route::get('/list', [PaymentMethodController::class, 'listPayment']);
 
+        //get all payment methods
+        Route::get('/list/{id}', [PaymentMethodController::class, 'singlePaymentInfo']);
+
         //add payment methods
         Route::post('/add', [PaymentMethodController::class, 'addPayment']);
+
+        //update payment methods
+        Route::post('/update', [PaymentMethodController::class, 'updatePayment']);
+
+        //delete payment
+        Route::post('/delete', [PaymentMethodController::class, 'deletePayment']);
 
     });
 

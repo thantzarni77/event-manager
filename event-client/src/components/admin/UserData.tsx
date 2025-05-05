@@ -86,6 +86,7 @@ const UserData = ({
                 >
                   <FaArrowUpLong className="text-[18px]" />
                 </button>
+                {/* Promote Dialog */}
                 <dialog
                   ref={promoteModalRef}
                   className="modal modal-bottom sm:modal-middle"
@@ -122,6 +123,7 @@ const UserData = ({
                 >
                   <FaArrowDownLong className="text-[18px]" />
                 </button>
+                {/* Demote Dialog */}
                 <dialog
                   ref={demoteModalRef}
                   className="modal modal-bottom sm:modal-middle"

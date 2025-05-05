@@ -18,8 +18,24 @@ class PaymentMethodController extends Controller
         return $this->paymentMethodRepositoryInterface->listPayment();
     }
 
+    public function singlePaymentInfo($id)
+    {
+        return $this->paymentMethodRepositoryInterface->singlePaymentInfo($id);
+
+    }
+
     public function addPayment(Request $request)
     {
         return $this->paymentMethodRepositoryInterface->addPayment($request);
+    }
+
+    public function updatePayment(Request $request)
+    {
+        return $this->paymentMethodRepositoryInterface->updatePayment($request);
+    }
+
+    public function deletePayment(Request $request)
+    {
+        return $this->paymentMethodRepositoryInterface->deletePayment($request);
     }
 }
