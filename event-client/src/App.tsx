@@ -17,9 +17,7 @@ const GoogleCallback = React.lazy(() => import("./components/GoogleCallback"));
 
 const Admin = React.lazy(() => import("./pages/admin/Admin"));
 const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
-const Organizations = React.lazy(
-  () => import("./components/admin/Organizations"),
-);
+const Organizations = React.lazy(() => import("./pages/admin/Organizations"));
 const PaymentMethods = React.lazy(() => import("./pages/admin/PaymentMethods"));
 const ManageUsers = React.lazy(() => import("./pages/admin/ManageUsers"));
 
@@ -33,6 +31,7 @@ import IsLoginAndUser from "./helper/middleware/IsLoginAndUser";
 import IsLoginAndAdmin from "./helper/middleware/IsLoginAndAdmin";
 
 import { Suspense } from "react";
+import AddOrg from "./components/admin/AddOrg";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -135,12 +134,25 @@ const App = () => {
           ),
         },
         {
-          path: "orgs/list",
-          element: (
-            <IsLoginAndAdmin>
-              <Organizations />
-            </IsLoginAndAdmin>
-          ),
+          path: "orgs",
+          children: [
+            {
+              path: "list",
+              element: (
+                <IsLoginAndAdmin>
+                  <Organizations />
+                </IsLoginAndAdmin>
+              ),
+            },
+            {
+              path: "add",
+              element: (
+                <IsLoginAndAdmin>
+                  <AddOrg />
+                </IsLoginAndAdmin>
+              ),
+            },
+          ],
         },
         {
           path: "payment-methods",

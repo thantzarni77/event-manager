@@ -71,7 +71,12 @@ const Dock = () => {
             <li className="tooltip tooltip-top" data-tip="Manage Organizations">
               <Link
                 to="orgs/list"
-                className={dockItemClass(currentPath == "/admin/orgs/list")}
+                className={dockItemClass(
+                  currentPath == "/admin/orgs/list" ||
+                    currentPath == "/admin/orgs/add"
+                    ? true
+                    : false,
+                )}
               >
                 <VscOrganization className="text-2xl lg:text-[32px]" />
               </Link>

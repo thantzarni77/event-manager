@@ -40,7 +40,7 @@ const PaymentMethods = () => {
   const editModalRef = useRef<HTMLDialogElement>(null);
   const deleteDialog = useRef<HTMLDialogElement>(null);
 
-  //setFormData from child
+  //get setFormData function from child
   const setFormDataRef = useRef<((data: PaymentState) => void) | null>(null);
 
   const getAllPayments = () => {
@@ -90,6 +90,7 @@ const PaymentMethods = () => {
       })
       .catch(({ response }) => {
         setErrors(response.data.errors);
+        setLoading(false);
       });
   };
 
@@ -112,7 +113,7 @@ const PaymentMethods = () => {
     axiosClient
       .post("/payment/update", payload)
       .then((response) => {
-        if (response.data == "201") {
+        if (response.data == "202") {
           getAllPayments();
           setErrors(null);
           setLoading(false);
@@ -121,6 +122,7 @@ const PaymentMethods = () => {
       })
       .catch(({ response }) => {
         setErrors(response.data.errors);
+        setLoading(false);
       });
   };
 

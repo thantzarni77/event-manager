@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GoogleLoginController;
+use App\Http\Controllers\OrgController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -35,15 +36,21 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         //user logout
         Route::get('/destroy', [AuthController::class, 'logout']);
 
-        Route::middleware('superAdminMiddleware')->group(function () {
-            //promote user
-            Route::post('/role-change', [UserController::class, 'roleChange']);
+    });
 
-        });
+    Route::group(['prefix' => "user", 'middleware' => 'superAdminMiddleware'], function () {
+        //promote user
+        Route::post('/role-change', [UserController::class, 'roleChange']);
 
     });
 
-    Route::group(['prefix' => "users"], function () {
+    Route::group(['prefix' => "org", 'middleware' => 'superAdminMiddleware'], function () {
+        //add org
+        Route::post('/add', [OrgController::class, 'addOrg']);
+
+    });
+
+    Route::group(['prefix' => "users", 'middleware' => 'superAdminMiddleware'], function () {
 
         //get all users
         Route::get("/list", [UserController::class, 'list']);
@@ -51,7 +58,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         //search users
         Route::post("/list/search", [UserController::class, 'search']);
 
-    });
+    }
+    );
 
 });
 

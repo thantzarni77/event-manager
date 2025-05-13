@@ -8,7 +8,7 @@ class UserRepository implements UserRepositoryInterface
 {
     public function list()
     {
-        $users = User::all();
+        $users = User::orderBy('name')->get();
         return response(compact('users'));
     }
 
@@ -20,7 +20,7 @@ class UserRepository implements UserRepositoryInterface
         if ($type == "filter") {
             $searchedUsers = User::where('role', $searchKey)->get();
         } else {
-            $searchedUsers = User::where('name', 'like', '%' . $searchKey . '%')->get();
+            $searchedUsers = User::where('name', 'like', '%' . $searchKey . '%')->orWhere('email', 'like', '%' . $searchKey . '%')->get();
 
         }
 

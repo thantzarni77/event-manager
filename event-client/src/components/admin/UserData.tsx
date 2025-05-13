@@ -10,7 +10,7 @@ type Props = {
   role: string;
   loginMethod: string;
   profile: string | null;
-  getAllUsers: () => void;
+  getAllUsers?: () => void;
 };
 
 const UserData = ({
@@ -34,7 +34,7 @@ const UserData = ({
 
     axiosClient.post("/user/role-change", payload).then(() => {
       setLoading(false);
-      getAllUsers();
+      if (getAllUsers) getAllUsers();
     });
   };
 

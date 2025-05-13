@@ -9,7 +9,7 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface
 {
     public function listPayment()
     {
-        $payments = PaymentMethod::select('id', 'account_no', 'account_type', 'account_name')->get();
+        $payments = PaymentMethod::select('id', 'account_no', 'account_type', 'account_name')->orderBy('account_name')->get();
 
         return response(compact('payments'));
     }
@@ -45,7 +45,7 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface
             'account_name' => $request->account_name,
         ]);
 
-        return response(201);
+        return response(202);
     }
 
     public function deletePayment($request)

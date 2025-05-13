@@ -1,10 +1,9 @@
 import { createRef, useEffect, useState } from "react";
 import axiosClient from "../../axios-client";
 import { ScaleLoader } from "react-spinners";
-import { FaSearch } from "react-icons/fa";
-import { MdFilterAltOff } from "react-icons/md";
 
 import UserData from "../../components/admin/UserData";
+import SearchUser from "../../components/admin/SearchUser";
 
 type User = {
   id: number;
@@ -55,54 +54,11 @@ const ManageUsers = () => {
     <div className="mx-auto my-4 min-h-screen w-[90%]">
       <div className="flex w-full flex-col items-start gap-4 md:flex-row md:items-center">
         {/* search users */}
-        <form
-          method="GET"
-          onSubmit={(e) => {
-            e.preventDefault();
-            userSearchHandler("search");
-          }}
-          className="flex items-center gap-4"
-        >
-          <label className="input">
-            <svg
-              className="h-[1em] opacity-50"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <g
-                strokeLinejoin="round"
-                strokeLinecap="round"
-                strokeWidth="2.5"
-                fill="none"
-                stroke="currentColor"
-              >
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.3-4.3"></path>
-              </g>
-            </svg>
-            <input
-              type="search"
-              className="grow"
-              placeholder="Search user's name"
-              ref={userSearchRef}
-              value={userSearchRef.current?.value}
-            />
-          </label>
-          <button disabled={loading} type="submit" className="btn btn-primary">
-            <FaSearch />
-          </button>
-          <button
-            disabled={loading}
-            type="button"
-            className="btn btn-error"
-            onClick={() => {
-              allRadioRef.current?.click();
-              getAllUsers();
-            }}
-          >
-            <MdFilterAltOff />
-          </button>
-        </form>
+        <SearchUser
+          setUsers={setUsers}
+          allRadioRef={allRadioRef}
+          getAllUsers={getAllUsers}
+        />
 
         {/* filter users */}
         <div className="filter">

@@ -18,6 +18,9 @@ const PaymentAddModal = forwardRef<HTMLDialogElement, PaymentAddModalProps>(
   ({ paymentAddHandler, errors, loading, exposeSetFormData }, addModalRef) => {
     const closeButton = useRef<HTMLButtonElement>(null);
 
+    //add formKey to reset form state after submitting data
+    const [formKey, setFormKey] = useState(0);
+
     const [formData, setFormData] = useState<PaymentState>({
       account_name: "",
       account_no: "",
@@ -33,6 +36,7 @@ const PaymentAddModal = forwardRef<HTMLDialogElement, PaymentAddModalProps>(
         <div className="modal-box h-fit w-11/12 max-w-md">
           <h3 className="mb-4 text-lg font-bold">Add Payment Method</h3>
           <form
+            key={formKey}
             onSubmit={(e: React.FormEvent) => {
               e.preventDefault();
               paymentAddHandler(
@@ -40,6 +44,9 @@ const PaymentAddModal = forwardRef<HTMLDialogElement, PaymentAddModalProps>(
                 formData.account_no,
                 formData.account_type,
               );
+              setFormKey((prev) => {
+                return prev + 1;
+              });
             }}
             className="flex flex-col items-start gap-2"
           >
