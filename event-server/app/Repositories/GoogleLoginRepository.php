@@ -31,6 +31,7 @@ class GoogleLoginRepository implements GoogleLoginRepositoryInterface
             return response()->json(['error' => 'Invalid credentials provided.'], 422);
         }
 
+        //google login user got promoted, get its role
         $oldUser = User::where('provider_id', $socialiteUser->id)->first();
 
         $user = User::updateOrCreate([

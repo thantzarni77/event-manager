@@ -1,9 +1,11 @@
-import { createRef, useContext, useEffect, useState } from "react";
+import { createRef, useContext, useEffect, useRef, useState } from "react";
 import { LuLogIn } from "react-icons/lu";
 import { Link, useNavigate } from "react-router";
 import LoginWithGoogle from "../components/LoginWithGoogle";
 import { MainContext } from "../context/MainContext";
 import axiosClient from "../axios-client";
+import { FaEye } from "react-icons/fa";
+import { IoIosEyeOff } from "react-icons/io";
 
 const Login = () => {
   const { token, setToken, setUser } = useContext(MainContext);
@@ -12,11 +14,27 @@ const Login = () => {
 
   const navigate = useNavigate();
 
+  const [isPassword, setIsPassword] = useState("password");
+
+  const eyesOn = useRef<HTMLDivElement | null>(null);
+  const eyesOff = useRef<HTMLDivElement | null>(null);
+
   const emailRef = createRef<HTMLInputElement>();
   const passwordRef = createRef<HTMLInputElement>();
 
   //fetch google login url
   const [loginUrl, setLoginUrl] = useState("");
+
+  //show hide toggle
+  const pwdToggle = () => {
+    if (!passwordRef.current) return;
+
+    if (passwordRef.current.type == "password") {
+      setIsPassword("text");
+    } else {
+      setIsPassword("password");
+    }
+  };
 
   useEffect(() => {
     axiosClient
@@ -119,11 +137,29 @@ const Login = () => {
                   </g>
                 </svg>
                 <input
-                  type="password"
+                  type={isPassword}
                   ref={passwordRef}
                   required
                   placeholder="Password"
                 />
+
+                {isPassword == "password" ? (
+                  <div
+                    onClick={pwdToggle}
+                    ref={eyesOn}
+                    className="text-[18px] hover:cursor-pointer"
+                  >
+                    <FaEye />
+                  </div>
+                ) : (
+                  <div
+                    onClick={pwdToggle}
+                    className="text-[18px] hover:cursor-pointer"
+                    ref={eyesOff}
+                  >
+                    <IoIosEyeOff />
+                  </div>
+                )}
               </label>
               {error && (
                 <div role="alert" id="alert" className="alert alert-warning">

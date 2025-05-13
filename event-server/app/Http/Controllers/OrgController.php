@@ -12,6 +12,10 @@ class OrgController extends Controller
         $this->orgRepositoryInterface = $orgRepositoryInterface;
     }
 
+    public function listOrg()
+    {
+        return $this->orgRepositoryInterface->listOrg();
+    }
     public function addOrg(Request $request)
     {
         return $this->orgRepositoryInterface->addOrg($request);

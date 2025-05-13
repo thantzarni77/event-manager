@@ -55,7 +55,7 @@ const Dock = () => {
           </li>
 
           {/* Manage Users */}
-          {user?.role == "superadmin" && (
+          {(user?.role == "superadmin" || user?.role == "admin") && (
             <li className="tooltip tooltip-top" data-tip="Manage Users">
               <Link
                 to="users/list"
@@ -67,7 +67,7 @@ const Dock = () => {
           )}
 
           {/* Manage Organizations */}
-          {user?.role == "superadmin" && (
+          {(user?.role == "superadmin" || user?.role == "admin") && (
             <li className="tooltip tooltip-top" data-tip="Manage Organizations">
               <Link
                 to="orgs/list"

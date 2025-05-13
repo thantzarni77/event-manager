@@ -76,7 +76,7 @@ const UserData = ({
       <th className="flex items-center gap-2">
         {id != user?.id && (
           <>
-            {role != "admin" && (
+            {role != "admin" && role != "org_admin" && role != "superadmin" && (
               <>
                 <button
                   disabled={loading}
@@ -113,7 +113,7 @@ const UserData = ({
                 </dialog>
               </>
             )}
-            {role != "user" && (
+            {role != "superadmin" && role != "user" && (
               <>
                 <button
                   disabled={loading}

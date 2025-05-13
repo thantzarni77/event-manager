@@ -25,6 +25,11 @@ const Register = () => {
   const passwordRef = createRef<HTMLInputElement>();
   const confirmPasswordRef = createRef<HTMLInputElement>();
 
+  // const eyesOn = useRef<HTMLDivElement | null>(null);
+  // const eyesOff = useRef<HTMLDivElement | null>(null);
+  // const eyesOnConfirm = useRef<HTMLDivElement | null>(null);
+  // const eyesOffConfirm = useRef<HTMLDivElement | null>(null);
+
   //fetch google login url
   const [loginUrl, setLoginUrl] = useState("");
 
@@ -38,6 +43,39 @@ const Register = () => {
         throw err;
       });
   }, []);
+
+  // const pwdToggle = () => {
+  //   if (!passwordRef.current) return;
+
+  //   const currentType = passwordRef.current.type;
+  //   // passwordRef.current.type = currentType === "password" ? "text" : "password";
+
+  //   if (currentType == "password") {
+  //     if (eyesOn.current) eyesOn.current.style.display = "none";
+
+  //     if (eyesOff.current) eyesOff.current.style.display = "block";
+
+  //     passwordRef.current.type = "text";
+  //   } else {
+  //     if (eyesOn.current) eyesOn.current.style.display = "block";
+
+  //     if (eyesOff.current) eyesOff.current.style.display = "none";
+
+  //     passwordRef.current.type = "password";
+  //   }
+  // };
+
+  // const pwdConfirmToggle = () => {
+  //   if (!confirmPasswordRef.current) return;
+
+  //   const isPassword = confirmPasswordRef.current.type === "password";
+  //   confirmPasswordRef.current.type = isPassword ? "text" : "password";
+
+  //   if (eyesOnConfirm.current)
+  //     eyesOnConfirm.current.style.display = isPassword ? "none" : "block";
+  //   if (eyesOffConfirm.current)
+  //     eyesOffConfirm.current.style.display = isPassword ? "block" : "none";
+  // };
 
   const registerUserHandler = (event: React.FormEvent) => {
     setLoading(true);
@@ -210,7 +248,26 @@ const Register = () => {
                   pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                   title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
                 />
+
+                {/* <div
+                  onClick={pwdToggle}
+                  ref={eyesOn}
+                  className="text-[18px] hover:cursor-pointer"
+                >
+                  <FaEye />
+                </div>
+                <div
+                  onClick={pwdToggle}
+                  className="hidden text-[18px] hover:cursor-pointer"
+                  ref={eyesOff}
+                >
+                  <IoIosEyeOff />
+                </div> */}
               </label>
+              <p className="text-sm text-gray-400">
+                Must be more than 8 characters, including number, lowercase
+                letter, uppercase letter
+              </p>
               {errors?.password && (
                 <div role="alert" className="alert alert-warning">
                   <svg
@@ -266,6 +323,21 @@ const Register = () => {
                   title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
                 />
               </label>
+
+              {/* <div
+                onClick={pwdConfirmToggle}
+                ref={eyesOnConfirm}
+                className="text-[18px] hover:cursor-pointer"
+              >
+                <FaEye />
+              </div>
+              <div
+                onClick={pwdConfirmToggle}
+                className="hidden text-[18px] hover:cursor-pointer"
+                ref={eyesOffConfirm}
+              >
+                <IoIosEyeOff />
+              </div> */}
               {errors?.password_confirmation && (
                 <div role="alert" className="alert alert-warning">
                   <svg

@@ -5,5 +5,6 @@ use Illuminate\Http\Request;
 
 interface OrgRepositoryInterface
 {
+    public function listOrg();
     public function addOrg(Request $request);
 }

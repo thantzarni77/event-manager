@@ -5,6 +5,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Org extends Model
 {
-    protected $fillable = ['name', 'profile', 'description'];
-
+    protected $fillable = ['name', 'description', 'profile', 'admin_id'];
 }
