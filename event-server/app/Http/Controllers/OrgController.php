@@ -20,4 +20,9 @@ class OrgController extends Controller
     {
         return $this->orgRepositoryInterface->addOrg($request);
     }
+
+    public function getDetail($id)
+    {
+        return $this->orgRepositoryInterface->getDetail($id);
+    }
 }

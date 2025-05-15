@@ -1,7 +1,7 @@
 import { Link } from "react-router";
-import SingleOrg from "../../components/admin/SingleOrg";
+import SingleOrg from "../../../components/admin/orgs/SingleOrg";
 import { useEffect, useState } from "react";
-import axiosClient from "../../axios-client";
+import axiosClient from "../../../axios-client";
 import { ScaleLoader } from "react-spinners";
 
 export interface Org {
@@ -9,10 +9,17 @@ export interface Org {
   name: string;
   profile: string;
   description: string;
+  memberCount?: string | number;
+}
+
+interface Membercount {
+  org_id: null | number | string;
+  member_count: number | string;
 }
 
 const Organizations = () => {
   const [orgs, setOrgs] = useState<Org[]>();
+  const [memberCount, setMemberCount] = useState<Membercount[]>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,12 +27,13 @@ const Organizations = () => {
       .get("/org/list")
       .then(({ data }) => {
         setOrgs(data.orgs);
+        setMemberCount(data.orgMemberCounts);
         setLoading(false);
       })
       .catch((err) => {
         throw err;
       });
-  }, [orgs]);
+  }, []);
 
   return (
     <div className="mx-auto my-4 flex min-h-screen w-[90%] flex-col items-start">
@@ -42,14 +50,24 @@ const Organizations = () => {
         )}
         {orgs &&
           orgs.map((org) => {
-            return (
-              <SingleOrg
-                key={org.id}
-                name={org.name}
-                profile={org.profile}
-                description={org.description}
-              />
+            const match = memberCount?.find(
+              (single) => single.org_id === org.id,
             );
+
+            if (match) {
+              return (
+                <SingleOrg
+                  key={org.id}
+                  id={org.id}
+                  name={org.name}
+                  profile={org.profile}
+                  description={org.description}
+                  memberCount={match.member_count}
+                />
+              );
+            }
+
+            return null;
           })}
       </div>
     </div>

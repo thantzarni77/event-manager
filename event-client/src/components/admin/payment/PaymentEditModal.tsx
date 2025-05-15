@@ -1,25 +1,23 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
-import { Payment } from "../../pages/admin/PaymentMethods";
+import { Payment } from "../../../pages/admin/payment/PaymentMethods";
 
-type PaymentAddModalProps = {
-  paymentAddHandler: (
+interface PaymentEditModalProps {
+  paymentUpdateHandler: (
+    id: string | number | undefined,
     accName: string | undefined,
     accNum: string | undefined,
     accType: string | undefined,
   ) => void;
+  singlePayment: Payment | undefined;
   errors: Payment | null | undefined;
   loading: boolean;
-  exposeSetFormData: (fn: (data: PaymentState) => void) => void;
-};
+}
 
 type PaymentState = Omit<Payment, "id">;
 
-const PaymentAddModal = forwardRef<HTMLDialogElement, PaymentAddModalProps>(
-  ({ paymentAddHandler, errors, loading, exposeSetFormData }, addModalRef) => {
+const PaymentEditModal = forwardRef<HTMLDialogElement, PaymentEditModalProps>(
+  ({ paymentUpdateHandler, singlePayment, errors, loading }, editModalRef) => {
     const closeButton = useRef<HTMLButtonElement>(null);
-
-    //add formKey to reset form state after submitting data
-    const [formKey, setFormKey] = useState(0);
 
     const [formData, setFormData] = useState<PaymentState>({
       account_name: "",
@@ -28,25 +26,27 @@ const PaymentAddModal = forwardRef<HTMLDialogElement, PaymentAddModalProps>(
     });
 
     useEffect(() => {
-      exposeSetFormData(setFormData);
-    }, [exposeSetFormData]);
-
+      if (singlePayment) {
+        setFormData({
+          account_name: singlePayment.account_name || "",
+          account_no: singlePayment.account_no || "",
+          account_type: singlePayment.account_type || "",
+        });
+      }
+    }, [singlePayment]);
     return (
-      <dialog ref={addModalRef} className="modal w-full">
+      <dialog ref={editModalRef} className="modal w-full">
         <div className="modal-box h-fit w-11/12 max-w-md">
-          <h3 className="mb-4 text-lg font-bold">Add Payment Method</h3>
+          <h3 className="mb-4 text-lg font-bold">Edit Payment Method</h3>
           <form
-            key={formKey}
             onSubmit={(e: React.FormEvent) => {
               e.preventDefault();
-              paymentAddHandler(
+              paymentUpdateHandler(
+                singlePayment?.id,
                 formData.account_name,
                 formData.account_no,
                 formData.account_type,
               );
-              setFormKey((prev) => {
-                return prev + 1;
-              });
             }}
             className="flex flex-col items-start gap-2"
           >
@@ -169,7 +169,7 @@ const PaymentAddModal = forwardRef<HTMLDialogElement, PaymentAddModalProps>(
               type="submit"
               className="btn btn-primary my-2"
             >
-              Add
+              Save Edit
             </button>
           </form>
           <div className="modal-action">
@@ -191,4 +191,4 @@ const PaymentAddModal = forwardRef<HTMLDialogElement, PaymentAddModalProps>(
   },
 );
 
-export default PaymentAddModal;
+export default PaymentEditModal;

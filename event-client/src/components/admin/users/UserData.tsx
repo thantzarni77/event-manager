@@ -1,7 +1,7 @@
 import { useContext, useRef, useState } from "react";
-import { MainContext } from "../../context/MainContext";
+import { MainContext } from "../../../context/MainContext";
 import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
-import axiosClient from "../../axios-client";
+import axiosClient from "../../../axios-client";
 import { IoEyeOutline } from "react-icons/io5";
 
 type Props = {

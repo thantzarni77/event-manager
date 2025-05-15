@@ -1,8 +1,10 @@
 import React from "react";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 
+//main layout
 const Main = React.lazy(() => import("./layout/Main"));
 
+//user main pages
 const Home = React.lazy(() => import("./components/user/Home"));
 const About = React.lazy(() => import("./pages/user/About"));
 const MyEvents = React.lazy(() => import("./pages/user/MyEvents"));
@@ -11,16 +13,26 @@ const EventDetail = React.lazy(
 );
 const Purchase = React.lazy(() => import("./components/user/Purchase"));
 
+//login register
 const Login = React.lazy(() => import("./pages/Login"));
 const Register = React.lazy(() => import("./pages/Register"));
 const GoogleCallback = React.lazy(() => import("./components/GoogleCallback"));
 
+//admin main pages
 const Admin = React.lazy(() => import("./pages/admin/Admin"));
 const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
-const Organizations = React.lazy(() => import("./pages/admin/Organizations"));
-const PaymentMethods = React.lazy(() => import("./pages/admin/PaymentMethods"));
-const ManageUsers = React.lazy(() => import("./pages/admin/ManageUsers"));
+const Organizations = React.lazy(
+  () => import("./pages/admin/orgs/Organizations"),
+);
+const PaymentMethods = React.lazy(
+  () => import("./pages/admin/payment/PaymentMethods"),
+);
+const ManageUsers = React.lazy(() => import("./pages/admin/users/ManageUsers"));
 
+//admin secondary pages
+const AddOrg = React.lazy(() => import("./components/admin/orgs/AddOrg"));
+
+//landing page
 const Landing = React.lazy(() => import("./components/Landing"));
 
 import MainContextProvider from "./context/MainContextProvider";
@@ -31,7 +43,7 @@ import IsLoginAndUser from "./helper/middleware/IsLoginAndUser";
 import IsLoginAndAdmin from "./helper/middleware/IsLoginAndAdmin";
 
 import { Suspense } from "react";
-import AddOrg from "./components/admin/AddOrg";
+import OrgDetail from "./components/admin/orgs/OrgDetail";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -149,6 +161,14 @@ const App = () => {
               element: (
                 <IsLoginAndAdmin>
                   <AddOrg />
+                </IsLoginAndAdmin>
+              ),
+            },
+            {
+              path: "detail/:id",
+              element: (
+                <IsLoginAndAdmin>
+                  <OrgDetail />
                 </IsLoginAndAdmin>
               ),
             },

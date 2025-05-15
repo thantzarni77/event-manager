@@ -1,7 +1,7 @@
 import { ChangeEvent, createRef, useState } from "react";
-import SearchUser from "./SearchUser";
+import SearchUser from "../users/SearchUser";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import axiosClient from "../../axios-client";
+import axiosClient from "../../../axios-client";
 import { useNavigate } from "react-router";
 
 type User = {

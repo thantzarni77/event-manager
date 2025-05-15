@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { FaCirclePlus } from "react-icons/fa6";
 
-import axiosClient from "../../axios-client";
+import axiosClient from "../../../axios-client";
 import { ScaleLoader } from "react-spinners";
-import PaymentEditModal from "../../components/admin/PaymentEditModal";
-import PaymentAddModal from "../../components/admin/PaymentAddModal";
-import SinglePaymentMethod from "../../components/admin/SinglePaymentMethod";
+import PaymentEditModal from "../../../components/admin/payment/PaymentEditModal";
+import PaymentAddModal from "../../../components/admin/payment/PaymentAddModal";
+import SinglePaymentMethod from "../../../components/admin/payment/SinglePaymentMethod";
 
 export type Payment = {
   id: string | number;

@@ -1,8 +1,8 @@
 import { MdDeleteOutline } from "react-icons/md";
 // import axiosClient from "../../axios-client";
 import { FaEdit } from "react-icons/fa";
-import { Payment } from "../../pages/admin/PaymentMethods";
-import axiosClient from "../../axios-client";
+import { Payment } from "../../../pages/admin/payment/PaymentMethods";
+import axiosClient from "../../../axios-client";
 
 type Props = {
   id: string | number;

@@ -9,9 +9,15 @@ class OrgRepository implements OrgRepositoryInterface
 {
     public function listOrg()
     {
+        $orgMemberCounts = User::select('org_id')
+            ->whereIn('role', ['org_user', 'org_admin']) //<-- optional
+            ->groupBy('org_id')
+            ->selectRaw('org_id , COUNT(*)  as member_count')
+            ->get();
+
         $orgs = Org::select('id', 'name', 'profile', 'description')->get();
 
-        return response(compact('orgs'));
+        return response(compact('orgs', 'orgMemberCounts'));
     }
 
     public function addOrg($request)
@@ -34,6 +40,49 @@ class OrgRepository implements OrgRepositoryInterface
         ]);
 
         return response(201);
+    }
+
+    public function getDetail($id)
+    {
+        $rows = Org::select(
+            'orgs.id as org_id',
+            'orgs.name as org_name',
+            'orgs.profile as org_profile',
+            'orgs.description as org_description',
+            'users.name as user_name',
+            'users.email as user_email',
+            'users.profile as user_profile',
+            'users.role as user_role'
+        )
+            ->leftJoin('users', 'users.org_id', '=', 'orgs.id')
+            ->where('orgs.id', $id)
+            ->get();
+
+        // get org info from the first row
+        $org = $rows->first();
+
+        $members = $rows
+            ->map(function ($row) {
+                return [
+                    'name'    => $row->user_name,
+                    'email'   => $row->user_email,
+                    'profile' => $row->user_profile,
+                    'role'    => $row->user_role,
+                ];
+            })
+            ->sortBy(fn($user) => $user['role'] === 'org_admin' ? 0 : 1)
+            ->values();
+
+        $orgData = [
+            'org'     => [
+                'name'        => $org->org_name,
+                'profile'     => $org->org_profile,
+                'description' => $org->org_description,
+            ],
+            'members' => $members,
+        ];
+
+        return response(compact('orgData'));
     }
 
     private function checkValidation($request)

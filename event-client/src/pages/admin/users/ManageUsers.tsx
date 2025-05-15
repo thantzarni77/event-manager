@@ -1,9 +1,9 @@
 import { createRef, useEffect, useState } from "react";
-import axiosClient from "../../axios-client";
+import axiosClient from "../../../axios-client";
 import { ScaleLoader } from "react-spinners";
 
-import UserData from "../../components/admin/UserData";
-import SearchUser from "../../components/admin/SearchUser";
+import UserData from "../../../components/admin/users/UserData";
+import SearchUser from "../../../components/admin/users/SearchUser";
 
 type User = {
   id: number;

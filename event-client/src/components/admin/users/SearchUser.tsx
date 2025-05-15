@@ -1,5 +1,5 @@
 import { createRef, useState } from "react";
-import axiosClient from "../../axios-client";
+import axiosClient from "../../../axios-client";
 import { FaSearch } from "react-icons/fa";
 import { MdFilterAltOff } from "react-icons/md";
 type User = {

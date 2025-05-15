@@ -1,6 +1,6 @@
 import { BiLogOut } from "react-icons/bi";
 import { MdManageAccounts, MdOutlinePayment } from "react-icons/md";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, matchPath, useLocation, useNavigate } from "react-router";
 import axiosClient from "../../axios-client";
 import { useContext } from "react";
 import { MainContext } from "../../context/MainContext";
@@ -73,7 +73,8 @@ const Dock = () => {
                 to="orgs/list"
                 className={dockItemClass(
                   currentPath == "/admin/orgs/list" ||
-                    currentPath == "/admin/orgs/add"
+                    currentPath == "/admin/orgs/add" ||
+                    matchPath("/admin/orgs/detail/:id", currentPath)
                     ? true
                     : false,
                 )}
@@ -83,7 +84,7 @@ const Dock = () => {
             </li>
           )}
 
-          {/* Details */}
+          {/* Payment methods */}
           {user?.role == "superadmin" && (
             <li className="tooltip tooltip-top" data-tip="Payment Methods">
               <Link
