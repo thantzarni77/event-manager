@@ -60,6 +60,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         //add org
         Route::post('/add', [OrgController::class, 'addOrg']);
 
+        //add org
+        Route::post('/update', [OrgController::class, 'editOrg']);
+
         //detail org
         Route::get('/detail/{id}', [OrgController::class, 'getDetail']);
 

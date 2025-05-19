@@ -30,8 +30,9 @@ const PaymentMethods = React.lazy(
 const ManageUsers = React.lazy(() => import("./pages/admin/users/ManageUsers"));
 
 //admin secondary pages
-const AddOrg = React.lazy(() => import("./components/admin/orgs/AddOrg"));
 const OrgDetail = React.lazy(() => import("./components/admin/orgs/OrgDetail"));
+const AddOrg = React.lazy(() => import("./components/admin/orgs/AddOrg"));
+const EditOrg = React.lazy(() => import("./components/admin/orgs/EditOrg"));
 
 //landing page
 const Landing = React.lazy(() => import("./components/Landing"));
@@ -172,14 +173,14 @@ const App = () => {
                 </IsLoginAndAdmin>
               ),
             },
-            // {
-            //   path: "edit/:id",
-            //   element: (
-            //     <IsLoginAndAdmin>
-            //       <EditOrg />
-            //     </IsLoginAndAdmin>
-            //   ),
-            // },
+            {
+              path: "edit/:id",
+              element: (
+                <IsLoginAndAdmin>
+                  <EditOrg />
+                </IsLoginAndAdmin>
+              ),
+            },
           ],
         },
         {

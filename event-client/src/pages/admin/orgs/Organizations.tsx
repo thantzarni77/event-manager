@@ -68,7 +68,7 @@ const Organizations = () => {
 
   return (
     <div className="mx-auto my-4 flex min-h-screen w-[90%] flex-col items-start">
-      <div className="flex items-center gap-5">
+      <div className="flex flex-col items-start gap-5 md:flex-row md:items-center">
         <Link to={"/admin/orgs/add"} className="btn btn-primary">
           Add Organization
         </Link>

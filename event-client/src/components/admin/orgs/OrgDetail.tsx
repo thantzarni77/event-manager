@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import axiosClient from "../../../axios-client";
 import { ScaleLoader } from "react-spinners";
+import { FiEdit } from "react-icons/fi";
 
 interface OrgMember {
   name: string;
@@ -60,6 +61,14 @@ const OrgDetail = () => {
           }}
         >
           Back
+        </button>
+        <button
+          className="btn btn-primary"
+          onClick={() => {
+            navigate(`/admin/orgs/edit/${id}`);
+          }}
+        >
+          <FiEdit /> Edit
         </button>
       </div>
       {orgData ? (
