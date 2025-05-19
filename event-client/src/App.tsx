@@ -31,6 +31,7 @@ const ManageUsers = React.lazy(() => import("./pages/admin/users/ManageUsers"));
 
 //admin secondary pages
 const AddOrg = React.lazy(() => import("./components/admin/orgs/AddOrg"));
+const OrgDetail = React.lazy(() => import("./components/admin/orgs/OrgDetail"));
 
 //landing page
 const Landing = React.lazy(() => import("./components/Landing"));
@@ -43,7 +44,6 @@ import IsLoginAndUser from "./helper/middleware/IsLoginAndUser";
 import IsLoginAndAdmin from "./helper/middleware/IsLoginAndAdmin";
 
 import { Suspense } from "react";
-import OrgDetail from "./components/admin/orgs/OrgDetail";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -172,6 +172,14 @@ const App = () => {
                 </IsLoginAndAdmin>
               ),
             },
+            // {
+            //   path: "edit/:id",
+            //   element: (
+            //     <IsLoginAndAdmin>
+            //       <EditOrg />
+            //     </IsLoginAndAdmin>
+            //   ),
+            // },
           ],
         },
         {

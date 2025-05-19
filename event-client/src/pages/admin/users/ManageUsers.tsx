@@ -11,6 +11,7 @@ type User = {
   email: string;
   profile: null | string;
   role: string;
+  org_name?: string | null;
   provider: string;
 };
 
@@ -32,6 +33,8 @@ const ManageUsers = () => {
   useEffect(() => {
     getAllUsers();
   }, []);
+
+  console.log(users);
 
   const userSearchHandler = (
     type: string,
@@ -109,7 +112,14 @@ const ManageUsers = () => {
         </div>
       ) : (
         <>
-          <div className="my-6 min-h-screen overflow-x-auto">
+          <div className="my-6 min-h-screen overflow-x-auto pb-24">
+            <div className="flex items-center gap-4">
+              <p>Total Users</p>
+              <div className="badge badge-sm badge-secondary font-bold">
+                {users.length}
+              </div>
+            </div>
+
             <table className="table">
               {/* head */}
               <thead>
@@ -117,6 +127,7 @@ const ManageUsers = () => {
                   <th>Name</th>
                   <th>Role</th>
                   <th>Login Method</th>
+                  <th>Org Name</th>
                   <th></th>
                 </tr>
               </thead>
@@ -130,6 +141,7 @@ const ManageUsers = () => {
                         name={user.name}
                         role={user.role}
                         profile={user.profile}
+                        org_name={user.org_name}
                         loginMethod={user.provider}
                         getAllUsers={getAllUsers}
                       />
@@ -137,7 +149,7 @@ const ManageUsers = () => {
                   })
                 ) : (
                   <tr>
-                    <td className="text-white">No user</td>
+                    <td>No user</td>
                   </tr>
                 )}
               </tbody>

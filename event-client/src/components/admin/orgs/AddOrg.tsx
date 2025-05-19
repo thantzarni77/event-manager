@@ -1,8 +1,10 @@
 import { ChangeEvent, createRef, useState } from "react";
-import SearchUser from "../users/SearchUser";
-import { FaCloudUploadAlt } from "react-icons/fa";
-import axiosClient from "../../../axios-client";
 import { useNavigate } from "react-router";
+
+import SearchUser from "../users/SearchUser";
+import axiosClient from "../../../axios-client";
+
+import { MdOutlineFileUpload } from "react-icons/md";
 
 type User = {
   id: number;
@@ -201,7 +203,7 @@ const AddOrg = () => {
 
             {/* Upload Icon */}
             <div className="relative z-20 flex h-full flex-col items-center justify-center">
-              <FaCloudUploadAlt size={40} />
+              <MdOutlineFileUpload size={40} />
               <span className="mt-2 text-sm font-medium">
                 {imagePreview ? "Change Image" : "Choose Image"}
               </span>

@@ -9,15 +9,19 @@ class OrgRepository implements OrgRepositoryInterface
 {
     public function listOrg()
     {
-        $orgMemberCounts = User::select('org_id')
-            ->whereIn('role', ['org_user', 'org_admin']) //<-- optional
-            ->groupBy('org_id')
+
+        $orgMemberCounts = User::groupBy('org_id')
             ->selectRaw('org_id , COUNT(*)  as member_count')
             ->get();
 
-        $orgs = Org::select('id', 'name', 'profile', 'description')->get();
+        $orgs = Org::select('id', 'name', 'profile', 'description')
+            ->when(request()->filled('type'), function ($query) {
+                $query->orderBy(request()->input('column'), request()->input('type'));
+            })
+            ->orderBy('name')
+            ->get();
 
-        return response(compact('orgs', 'orgMemberCounts'));
+        return response()->json((compact('orgs', 'orgMemberCounts')));
     }
 
     public function addOrg($request)
@@ -49,12 +53,13 @@ class OrgRepository implements OrgRepositoryInterface
             'orgs.name as org_name',
             'orgs.profile as org_profile',
             'orgs.description as org_description',
+            'users.id as user_id',
             'users.name as user_name',
             'users.email as user_email',
             'users.profile as user_profile',
             'users.role as user_role'
         )
-            ->leftJoin('users', 'users.org_id', '=', 'orgs.id')
+            ->leftJoin('users', 'users.org_id', 'orgs.id')
             ->where('orgs.id', $id)
             ->get();
 
@@ -64,13 +69,14 @@ class OrgRepository implements OrgRepositoryInterface
         $members = $rows
             ->map(function ($row) {
                 return [
+                    'id'      => $row->user_id,
                     'name'    => $row->user_name,
                     'email'   => $row->user_email,
                     'profile' => $row->user_profile,
                     'role'    => $row->user_role,
                 ];
             })
-            ->sortBy(fn($user) => $user['role'] === 'org_admin' ? 0 : 1)
+            ->sortBy(fn($user) => $user['role'] === 'org_admin' ? 0 : 1) // show org admin first
             ->values();
 
         $orgData = [
@@ -82,13 +88,13 @@ class OrgRepository implements OrgRepositoryInterface
             'members' => $members,
         ];
 
-        return response(compact('orgData'));
+        return response()->json((compact('orgData')));
     }
 
     private function checkValidation($request)
     {
         $rules = [
-            'name'        => 'required|max:40',
+            'name'        => 'required|max:40|unique:orgs,name',
             'description' => 'required|max:500',
             'orgAdminID'  => 'required|numeric|min:1|unique:orgs,admin_id,',
             'orgProfile'  => 'required|file|mimes:jpg,jpeg,png,svg,gif|max:5120',

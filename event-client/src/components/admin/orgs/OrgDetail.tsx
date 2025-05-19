@@ -29,30 +29,43 @@ const OrgDetail = () => {
   const [orgData, setOrgData] = useState<OrgResponse>();
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     axiosClient
-      .get(`/org/detail/${id}`)
+      .get(`/org/detail/${id}`, {
+        signal: signal,
+      })
       .then(({ data }) => {
         setOrgData(data.orgData);
       })
       .catch((err) => {
-        throw err;
+        if (err.name === "AbortError") {
+          console.log("successfully aborted");
+        } else {
+          console.log(err);
+        }
       });
+
+    return () => controller.abort();
   }, [id]);
 
   return (
     <div className="mx-auto my-3 w-[90%] max-w-4xl p-6 pb-24">
-      <button
-        className="btn btn-secondary"
-        onClick={() => {
-          navigate(-1);
-        }}
-      >
-        Back
-      </button>
+      <div className="flex items-center justify-between">
+        <button
+          className="btn btn-secondary"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          Back
+        </button>
+      </div>
       {orgData ? (
         <>
           {/* Organization  Name/Image*/}
-          <div className="mb-6 text-center">
+          <div className="mt-4 mb-6">
             <h1 className="mb-4 text-3xl font-bold">{orgData.org.name}</h1>
 
             <div className="relative w-full overflow-hidden rounded-2xl shadow">
@@ -77,7 +90,7 @@ const OrgDetail = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-4 hover:cursor-pointer sm:grid-cols-2 md:grid-cols-3">
-              <div className="group bg-base-100 overflow-hidden rounded-xl shadow transition duration-300 hover:scale-[1.02] hover:shadow-lg">
+              <div className="group bg-base-200 overflow-hidden rounded-xl shadow transition duration-300 hover:scale-[1.02] hover:shadow-lg">
                 <div className="relative">
                   <img
                     src="/images/events/ALBS3.jpg"
@@ -87,7 +100,7 @@ const OrgDetail = () => {
                 </div>
                 <div className="p-4">
                   <h3 className="text-lg font-semibold">Annual Tech Meetup</h3>
-                  <p className="text-sm text-gray-500">June 15, 2025</p>
+                  <p className="text-sm">June 15, 2025</p>
                 </div>
               </div>
             </div>
@@ -96,7 +109,9 @@ const OrgDetail = () => {
           <div className="mt-8">
             <div className="mb-4 flex items-center gap-4">
               <h2 className="text-xl font-semibold">Organization Members</h2>
-              <div className="badge badge-sm badge-secondary font-bold">1</div>
+              <div className="badge badge-sm badge-secondary font-bold">
+                {orgData.members.length}
+              </div>
             </div>
             <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {orgData.members.map((singleOrg, index) => {

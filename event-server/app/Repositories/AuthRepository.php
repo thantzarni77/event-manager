@@ -18,7 +18,7 @@ class AuthRepository implements AuthRepositoryInterface
         ]);
 
         $access_token = $user->createToken('normal')->plainTextToken;
-        return response(compact('user', 'access_token'));
+        return response()->json((compact('user', 'access_token')));
 
     }
 
@@ -33,7 +33,7 @@ class AuthRepository implements AuthRepositoryInterface
 
         $user         = Auth::user();
         $access_token = $user->createToken('main')->plainTextToken;
-        return response(compact('user', 'access_token'));
+        return response()->json((compact('user', 'access_token')));
 
     }
     //user logout

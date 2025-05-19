@@ -11,14 +11,14 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface
     {
         $payments = PaymentMethod::select('id', 'account_no', 'account_type', 'account_name')->orderBy('account_name')->get();
 
-        return response(compact('payments'));
+        return response()->json((compact('payments')));
     }
 
     public function singlePaymentInfo($id)
     {
         $singlePayment = PaymentMethod::where('id', $id)->select('id', 'account_no', 'account_type', 'account_name')->first();
 
-        return response(compact('singlePayment'));
+        return response()->json((compact('singlePayment')));
 
     }
 

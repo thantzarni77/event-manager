@@ -8,7 +8,19 @@ class UserRepository implements UserRepositoryInterface
 {
     public function list()
     {
-        $users = User::orderBy('name')->get();
+        $users = User::select(
+            'users.id',
+            'users.name',
+            'users.role',
+            'users.email',
+            'users.profile',
+            'users.provider',
+            'orgs.name as org_name'
+        )
+            ->leftJoin('orgs', 'orgs.id', 'users.org_id')
+            ->orderBy('users.name')
+            ->get();
+
         return response(compact('users'));
     }
 
@@ -18,9 +30,40 @@ class UserRepository implements UserRepositoryInterface
         $searchKey = $request['searchKey'];
 
         if ($type == "filter") {
-            $searchedUsers = User::where('role', $searchKey)->get();
+            if ($searchKey == "org") {
+
+                $searchedUsers = User::whereIn('users.role', ['org_admin', 'org_user'])
+                    ->select(
+                        'users.id',
+                        'users.name',
+                        'users.role',
+                        'users.email',
+                        'users.profile',
+                        'users.provider',
+                        'orgs.name as org_name'
+                    )
+                    ->leftJoin('orgs', 'orgs.id', 'users.org_id')
+                    ->orderBy('users.name')
+                    ->get();
+            } else {
+                $searchedUsers = User::where('role', $searchKey)->get();
+            }
+
         } else {
-            $searchedUsers = User::where('name', 'like', '%' . $searchKey . '%')->orWhere('email', 'like', '%' . $searchKey . '%')->get();
+            $searchedUsers = User::where('users.name', 'like', '%' . $searchKey . '%')
+                ->orWhere('users.email', 'like', '%' . $searchKey . '%')
+                ->select(
+                    'users.id',
+                    'users.name',
+                    'users.role',
+                    'users.email',
+                    'users.profile',
+                    'users.provider',
+                    'orgs.name as org_name'
+                )
+                ->leftJoin('orgs', 'orgs.id', 'users.org_id')
+                ->orderBy('users.name')
+                ->get();
 
         }
 

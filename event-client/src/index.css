@@ -15,3 +15,8 @@ body {
 @plugin "daisyui" {
   themes: cupcake, dracula;
 }
+@plugin "daisyui/theme" {
+  name: "cupcake";
+  default: true;
+  --color-base-100: #ebebeb;
+}
