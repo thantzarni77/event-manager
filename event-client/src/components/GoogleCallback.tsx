@@ -6,6 +6,7 @@ import { User } from "../context/MainContextProvider";
 import { ScaleLoader } from "react-spinners";
 
 import axiosClient from "../axios-client";
+import setRoute from "../helper/setRoute";
 
 const GoogleCallback = () => {
   const [data, setData] = useState<Data | null>(null);
@@ -31,9 +32,11 @@ const GoogleCallback = () => {
       .then(({ data }) => {
         setData(data);
         setToken(data.access_token);
+        const route = setRoute(data.user.role);
+        return route;
       })
-      .then(() => {
-        navigate("/home");
+      .then((route) => {
+        navigate(`${route}`);
       });
   }, [location.search, setUser, data, setToken, navigate, user]);
 

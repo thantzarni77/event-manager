@@ -43,7 +43,7 @@ class UserRepository implements UserRepositoryInterface
                         'orgs.name as org_name'
                     )
                     ->leftJoin('orgs', 'orgs.id', 'users.org_id')
-                    ->orderBy('users.name')
+                    ->orderBy('orgs.name')
                     ->get();
             } else {
                 $searchedUsers = User::where('role', $searchKey)->get();

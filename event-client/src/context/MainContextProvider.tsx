@@ -108,6 +108,8 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [user, setUser] = useState<User | null>(null);
 
+  const [isOpen, setIsOpen] = useState(false);
+
   const [token, _setToken] = useState(localStorage.getItem("access_token"));
 
   const setToken = (token: string | null) => {
@@ -135,6 +137,8 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     setUser,
     token,
     setToken,
+    isOpen,
+    setIsOpen,
   };
 
   return <MainContext.Provider value={values}>{children}</MainContext.Provider>;

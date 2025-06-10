@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Interfaces\OrgRepositoryInterface;
 use App\Models\Org;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class OrgRepository implements OrgRepositoryInterface
 {

@@ -9,6 +9,8 @@ export type Value = {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   token: string | null;
   setToken: (token: string | null) => void;
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 type singleData = {
@@ -28,6 +30,8 @@ const initialValues: Value = {
   setUser: () => {},
   token: null,
   setToken: () => {},
+  isOpen: false,
+  setIsOpen: () => {},
 };
 
 export const MainContext = createContext(initialValues);

@@ -120,7 +120,7 @@ const OrgForm = ({ mode, initialValues, currentAdmin }: Props) => {
 
   //actual function to add org
   const addOrgHandler = (e: React.FormEvent) => {
-    // setLoading(true);
+    setLoading(true);
     e.preventDefault();
 
     const formData = new FormData();

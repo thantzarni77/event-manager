@@ -18,18 +18,29 @@ const UserLoginRoleCheck = ({ children }: Props) => {
       axiosClient.get("/user").then(({ data }) => {
         switch (data?.role) {
           case "user":
+            isOkay.current = true;
             navigate("/home");
             break;
 
-          default:
+          case "superadmin":
             navigate("/admin/dashboard");
             break;
+
+          case "admin":
+            navigate("/admin/dashboard");
+            break;
+
+          case "org_admin":
+            navigate("/org-admin/dashboard");
+            break;
+
+          case "org_user":
+            navigate("org-user/dashboard");
+            break;
         }
-        isOkay.current = true;
       });
     } else {
       navigate("/landing");
-      isOkay.current = true;
     }
   }, [token, navigate, user?.role]);
 

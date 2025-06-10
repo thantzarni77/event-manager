@@ -2,13 +2,11 @@ import React, { Suspense, useContext } from "react";
 import { Outlet } from "react-router";
 import ScrollToTop from "../../components/user/scroll/ScrollToTop";
 import { MainContext } from "../../context/MainContext";
-// import TopBar from "../../components/admin/TopBar";
-// import Dock from "../../components/admin/Dock";
 
 const TopBar = React.lazy(() => import("../../components/admin/TopBar"));
 const Dock = React.lazy(() => import("../../components/admin/Dock"));
 
-const Admin = () => {
+const OrgAdmin = () => {
   const { isOpen } = useContext(MainContext);
   return (
     <div
@@ -24,4 +22,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default OrgAdmin;

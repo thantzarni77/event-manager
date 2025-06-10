@@ -34,6 +34,15 @@ const OrgDetail = React.lazy(() => import("./components/admin/orgs/OrgDetail"));
 const AddOrg = React.lazy(() => import("./components/admin/orgs/AddOrg"));
 const EditOrg = React.lazy(() => import("./components/admin/orgs/EditOrg"));
 
+//org main pages
+const OrgAdmin = React.lazy(() => import("./pages/org/OrgAdmin"));
+const OrgDashboard = React.lazy(() => import("./pages/org/OrgDashboard"));
+const OrgEvents = React.lazy(() => import("./pages/org/OrgEvents"));
+const Members = React.lazy(() => import("./pages/org/Members"));
+
+//org secondary pages
+const OrgEventAdd = React.lazy(() => import("./components/org/OrgEventAdd"));
+
 //landing page
 const Landing = React.lazy(() => import("./components/Landing"));
 
@@ -48,6 +57,7 @@ import { Suspense } from "react";
 
 const App = () => {
   const router = createBrowserRouter([
+    //user && login register
     {
       path: "/",
       element: (
@@ -122,6 +132,7 @@ const App = () => {
       ],
     },
 
+    //admin && superadmin
     {
       path: "/admin",
       element: <Admin />,
@@ -190,6 +201,44 @@ const App = () => {
               <PaymentMethods />
             </IsLoginAndAdmin>
           ),
+        },
+      ],
+    },
+
+    //org admin && org members
+    {
+      path: "/org-admin",
+      element: <OrgAdmin />,
+      children: [
+        {
+          path: "dashboard",
+          element: <OrgDashboard />,
+        },
+        {
+          index: true,
+          element: <Navigate to="dashboard" replace />,
+        },
+        {
+          path: "add",
+          children: [
+            {
+              path: "events",
+              element: <OrgEventAdd />,
+            },
+          ],
+        },
+        {
+          path: "list",
+          children: [
+            {
+              path: "members",
+              element: <Members />,
+            },
+            {
+              path: "events",
+              element: <OrgEvents />,
+            },
+          ],
         },
       ],
     },

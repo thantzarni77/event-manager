@@ -34,8 +34,6 @@ const ManageUsers = () => {
     getAllUsers();
   }, []);
 
-  console.log(users);
-
   const userSearchHandler = (
     type: string,
     value: string | undefined = undefined,

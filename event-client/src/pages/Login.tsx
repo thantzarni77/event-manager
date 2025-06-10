@@ -1,4 +1,4 @@
-import { createRef, useContext, useEffect, useRef, useState } from "react";
+import { createRef, useContext, useEffect, useState } from "react";
 import { LuLogIn } from "react-icons/lu";
 import { Link, useNavigate } from "react-router";
 import LoginWithGoogle from "../components/LoginWithGoogle";
@@ -6,6 +6,7 @@ import { MainContext } from "../context/MainContext";
 import axiosClient from "../axios-client";
 import { FaEye } from "react-icons/fa";
 import { IoIosEyeOff } from "react-icons/io";
+import setRoute from "../helper/setRoute";
 
 const Login = () => {
   const { token, setToken, setUser } = useContext(MainContext);
@@ -15,9 +16,6 @@ const Login = () => {
   const navigate = useNavigate();
 
   const [isPassword, setIsPassword] = useState("password");
-
-  const eyesOn = useRef<HTMLDivElement | null>(null);
-  const eyesOff = useRef<HTMLDivElement | null>(null);
 
   const emailRef = createRef<HTMLInputElement>();
   const passwordRef = createRef<HTMLInputElement>();
@@ -61,10 +59,12 @@ const Login = () => {
       .then(({ data }) => {
         setToken(data.access_token);
         setUser(data.user);
+        const route = setRoute(data.user.role);
+        return route;
       })
-      .then(() => {
+      .then((route) => {
         setLoading(false);
-        navigate("/home");
+        navigate(`${route}`);
       })
       .catch(({ response }) => {
         setError(response.data.message);
@@ -146,7 +146,6 @@ const Login = () => {
                 {isPassword == "password" ? (
                   <div
                     onClick={pwdToggle}
-                    ref={eyesOn}
                     className="text-[18px] hover:cursor-pointer"
                   >
                     <FaEye />
@@ -155,7 +154,6 @@ const Login = () => {
                   <div
                     onClick={pwdToggle}
                     className="text-[18px] hover:cursor-pointer"
-                    ref={eyesOff}
                   >
                     <IoIosEyeOff />
                   </div>

@@ -79,86 +79,82 @@ const UserData = ({
       <th className="flex items-center gap-2">
         {id != user?.id && (
           <>
-            {role != "admin" &&
-              role != "superadmin" &&
-              role != "org_admin" &&
-              role != "org_user" && (
-                <>
-                  <button
-                    disabled={loading}
-                    type="button"
-                    onClick={openPromoteDialog}
-                    className="btn btn-sm btn-success"
-                  >
-                    <FaArrowUpLong className="text-[18px]" />
-                  </button>
-                  {/* Promote Dialog */}
-                  <dialog
-                    ref={promoteModalRef}
-                    className="modal modal-bottom sm:modal-middle"
-                  >
-                    <div className="modal-box">
-                      <h3 className="text-lg font-bold">Attention !</h3>
-                      <p className="py-4">
-                        Are you sure you want to promote this user ?
-                      </p>
-                      <div className="modal-action">
-                        <form method="dialog">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => roleChangeHandler("promote")}
-                              className="btn btn-success"
-                            >
-                              Yes
-                            </button>
-                            <button className="btn btn-error">No</button>
-                          </div>
-                        </form>
-                      </div>
+            {/* show promote only in user role */}
+            {role == "user" && (
+              <>
+                <button
+                  disabled={loading}
+                  type="button"
+                  onClick={openPromoteDialog}
+                  className="btn btn-sm btn-success"
+                >
+                  <FaArrowUpLong className="text-[18px]" />
+                </button>
+                {/* Promote Dialog */}
+                <dialog
+                  ref={promoteModalRef}
+                  className="modal modal-bottom sm:modal-middle"
+                >
+                  <div className="modal-box">
+                    <h3 className="text-lg font-bold">Attention !</h3>
+                    <p className="py-4">
+                      Are you sure you want to promote this user ?
+                    </p>
+                    <div className="modal-action">
+                      <form method="dialog">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => roleChangeHandler("promote")}
+                            className="btn btn-success"
+                          >
+                            Yes
+                          </button>
+                          <button className="btn btn-error">No</button>
+                        </div>
+                      </form>
                     </div>
-                  </dialog>
-                </>
-              )}
-            {role != "superadmin" &&
-              role != "user" &&
-              role != "org_admin" &&
-              role != "org_user" && (
-                <>
-                  <button
-                    disabled={loading}
-                    type="button"
-                    onClick={openDemoteDialog}
-                    className="btn btn-sm btn-error"
-                  >
-                    <FaArrowDownLong className="text-[18px]" />
-                  </button>
-                  {/* Demote Dialog */}
-                  <dialog
-                    ref={demoteModalRef}
-                    className="modal modal-bottom sm:modal-middle"
-                  >
-                    <div className="modal-box">
-                      <h3 className="text-lg font-bold">Attention !</h3>
-                      <p className="py-4">
-                        Are you sure you want to demote this user ?
-                      </p>
-                      <div className="modal-action">
-                        <form method="dialog">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => roleChangeHandler("demote")}
-                              className="btn btn-success"
-                            >
-                              Yes
-                            </button>
-                            <button className="btn btn-error">No</button>
-                          </div>
-                        </form>
-                      </div>
+                  </div>
+                </dialog>
+              </>
+            )}
+            {/* show demote only in admin role, admin can't demote other admin */}
+            {role == "admin" && !(user?.role == "admin" && role == "admin") && (
+              <>
+                <button
+                  disabled={loading}
+                  type="button"
+                  onClick={openDemoteDialog}
+                  className="btn btn-sm btn-error"
+                >
+                  <FaArrowDownLong className="text-[18px]" />
+                </button>
+                {/* Demote Dialog */}
+                <dialog
+                  ref={demoteModalRef}
+                  className="modal modal-bottom sm:modal-middle"
+                >
+                  <div className="modal-box">
+                    <h3 className="text-lg font-bold">Attention !</h3>
+                    <p className="py-4">
+                      Are you sure you want to demote this user ?
+                    </p>
+                    <div className="modal-action">
+                      <form method="dialog">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => roleChangeHandler("demote")}
+                            className="btn btn-success"
+                          >
+                            Yes
+                          </button>
+                          <button className="btn btn-error">No</button>
+                        </div>
+                      </form>
                     </div>
-                  </dialog>
-                </>
-              )}
+                  </div>
+                </dialog>
+              </>
+            )}
           </>
         )}
         <button className="btn btn-sm btn-info">

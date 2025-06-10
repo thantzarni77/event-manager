@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router";
 import LoginWithGoogle from "../components/LoginWithGoogle";
 import { MainContext } from "../context/MainContext";
 import axiosClient from "../axios-client";
+import { FaEye } from "react-icons/fa6";
+import { IoIosEyeOff } from "react-icons/io";
+import setRoute from "../helper/setRoute";
 
 const Register = () => {
   type Errors = {
@@ -25,13 +28,27 @@ const Register = () => {
   const passwordRef = createRef<HTMLInputElement>();
   const confirmPasswordRef = createRef<HTMLInputElement>();
 
-  // const eyesOn = useRef<HTMLDivElement | null>(null);
-  // const eyesOff = useRef<HTMLDivElement | null>(null);
-  // const eyesOnConfirm = useRef<HTMLDivElement | null>(null);
-  // const eyesOffConfirm = useRef<HTMLDivElement | null>(null);
+  const [passwordBox, setPasswordBox] = useState("password");
+  const [confirmBox, setConfirmBox] = useState("password");
 
   //fetch google login url
   const [loginUrl, setLoginUrl] = useState("");
+
+  const pwdToggle = (box: string) => {
+    if (box == "password") {
+      if (passwordBox == "password") {
+        setPasswordBox("text");
+      } else {
+        setPasswordBox("password");
+      }
+    } else {
+      if (confirmBox == "password") {
+        setConfirmBox("text");
+      } else {
+        setConfirmBox("password");
+      }
+    }
+  };
 
   useEffect(() => {
     axiosClient
@@ -43,39 +60,6 @@ const Register = () => {
         throw err;
       });
   }, []);
-
-  // const pwdToggle = () => {
-  //   if (!passwordRef.current) return;
-
-  //   const currentType = passwordRef.current.type;
-  //   // passwordRef.current.type = currentType === "password" ? "text" : "password";
-
-  //   if (currentType == "password") {
-  //     if (eyesOn.current) eyesOn.current.style.display = "none";
-
-  //     if (eyesOff.current) eyesOff.current.style.display = "block";
-
-  //     passwordRef.current.type = "text";
-  //   } else {
-  //     if (eyesOn.current) eyesOn.current.style.display = "block";
-
-  //     if (eyesOff.current) eyesOff.current.style.display = "none";
-
-  //     passwordRef.current.type = "password";
-  //   }
-  // };
-
-  // const pwdConfirmToggle = () => {
-  //   if (!confirmPasswordRef.current) return;
-
-  //   const isPassword = confirmPasswordRef.current.type === "password";
-  //   confirmPasswordRef.current.type = isPassword ? "text" : "password";
-
-  //   if (eyesOnConfirm.current)
-  //     eyesOnConfirm.current.style.display = isPassword ? "none" : "block";
-  //   if (eyesOffConfirm.current)
-  //     eyesOffConfirm.current.style.display = isPassword ? "block" : "none";
-  // };
 
   const registerUserHandler = (event: React.FormEvent) => {
     setLoading(true);
@@ -93,10 +77,12 @@ const Register = () => {
       .then(({ data }) => {
         setToken(data.access_token);
         setUser(data.user);
+        const route = setRoute("user"); //registerd user is always user;
+        return route;
       })
-      .then(() => {
+      .then((route) => {
         setLoading(false);
-        navigate("/");
+        navigate(`${route}`);
       })
       .catch(({ response }) => {
         setErrors(response.data.errors);
@@ -239,7 +225,7 @@ const Register = () => {
                   </g>
                 </svg>
                 <input
-                  type="password"
+                  type={passwordBox}
                   required
                   name="password"
                   ref={passwordRef}
@@ -249,20 +235,21 @@ const Register = () => {
                   title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
                 />
 
-                {/* <div
-                  onClick={pwdToggle}
-                  ref={eyesOn}
-                  className="text-[18px] hover:cursor-pointer"
-                >
-                  <FaEye />
-                </div>
-                <div
-                  onClick={pwdToggle}
-                  className="hidden text-[18px] hover:cursor-pointer"
-                  ref={eyesOff}
-                >
-                  <IoIosEyeOff />
-                </div> */}
+                {passwordBox == "password" ? (
+                  <div
+                    onClick={() => pwdToggle("password")}
+                    className="text-[18px] hover:cursor-pointer"
+                  >
+                    <FaEye />
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => pwdToggle("password")}
+                    className="text-[18px] hover:cursor-pointer"
+                  >
+                    <IoIosEyeOff />
+                  </div>
+                )}
               </label>
               <p className="text-sm text-gray-400">
                 Must be more than 8 characters, including number, lowercase
@@ -313,7 +300,7 @@ const Register = () => {
                   </g>
                 </svg>
                 <input
-                  type="password"
+                  type={confirmBox}
                   required
                   name="password_confirmation"
                   ref={confirmPasswordRef}
@@ -322,22 +309,24 @@ const Register = () => {
                   pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                   title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
                 />
+
+                {confirmBox == "password" ? (
+                  <div
+                    onClick={() => pwdToggle("confirm")}
+                    className="text-[18px] hover:cursor-pointer"
+                  >
+                    <FaEye />
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => pwdToggle("confirm")}
+                    className="text-[18px] hover:cursor-pointer"
+                  >
+                    <IoIosEyeOff />
+                  </div>
+                )}
               </label>
 
-              {/* <div
-                onClick={pwdConfirmToggle}
-                ref={eyesOnConfirm}
-                className="text-[18px] hover:cursor-pointer"
-              >
-                <FaEye />
-              </div>
-              <div
-                onClick={pwdConfirmToggle}
-                className="hidden text-[18px] hover:cursor-pointer"
-                ref={eyesOffConfirm}
-              >
-                <IoIosEyeOff />
-              </div> */}
               {errors?.password_confirmation && (
                 <div role="alert" className="alert alert-warning">
                   <svg

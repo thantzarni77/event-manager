@@ -1,29 +1,17 @@
 import { useContext, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 
 import { MainContext } from "../../context/MainContext";
-import axiosClient from "../../axios-client";
+import Logout from "../../helper/Logout";
 
 const Navbar = () => {
-  const { theme, setTheme, setToken, setUser, user } = useContext(MainContext);
-
-  const navigate = useNavigate();
+  const { theme, setTheme, user } = useContext(MainContext);
 
   //set theme to localstorage and change theme
   useEffect(() => {
     localStorage.setItem("theme", theme);
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
-
-  const logoutController = () => {
-    axiosClient.get("user/destroy").then((response) => {
-      if (response.status == 204) {
-        setToken(null);
-        setUser(null);
-        navigate("/landing");
-      }
-    });
-  };
 
   return (
     <div className="navbar bg-base-100 sticky top-0 z-50 opacity-90 shadow-sm backdrop-blur-xl">
@@ -225,11 +213,7 @@ const Navbar = () => {
                 <li>
                   <a className="text-base">Settings</a>
                 </li>
-                <li>
-                  <a className="text-base" onClick={logoutController}>
-                    Logout
-                  </a>
-                </li>
+                <Logout />
               </ul>
             </div>
           </>

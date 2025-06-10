@@ -9,8 +9,9 @@ const TopBar = () => {
     localStorage.setItem("theme", theme);
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
   return (
-    <div className="navbar bg-base-100 sticky top-0 z-50 min-h-[3rem] opacity-90 shadow-sm backdrop-blur-xl">
+    <div className="navbar bg-base-100 sticky top-0 z-50 min-h-[3rem] px-8 opacity-90 shadow-sm backdrop-blur-xl">
       <div className="navbar-start text-xl font-bold">Ticketer</div>
 
       {/* Main center title */}
@@ -50,28 +51,9 @@ const TopBar = () => {
           </label>
         </div>
 
-        {/* show user releated features only when loginned */}
+        {/* admin user releated features only when loginned */}
         {user && (
           <>
-            {/* search button */}
-            {/* <button className="btn btn-ghost btn-circle">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                {" "}
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />{" "}
-              </svg>
-            </button> */}
-
             <span>{user?.name}</span>
 
             {/* Profile Dropdown */}
