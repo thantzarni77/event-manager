@@ -1,11 +1,22 @@
-import { createRef, useEffect, useState } from "react";
-import axiosClient from "../../../axios-client";
-import { ScaleLoader } from "react-spinners";
+import { createRef, useContext, useEffect, useState } from "react";
 
 import UserData from "../../../components/admin/users/UserData";
 import SearchUser from "../../../components/admin/users/SearchUser";
+import { MainContext } from "../../../context/MainContext";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryResult,
+} from "@tanstack/react-query";
 
-type User = {
+import { getAllUsers, searchUsers } from "../../../helper/api/apiFunctions";
+import { getError } from "../../../helper/api/errorHandler";
+import FormError from "../../../helper/FormError";
+
+import { ScaleLoader } from "react-spinners";
+
+export type Member = {
   id: number;
   name: string;
   email: string;
@@ -16,50 +27,57 @@ type User = {
 };
 
 const ManageUsers = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
-  const userSearchRef = createRef<HTMLInputElement>();
+  const queryClient = useQueryClient();
+
+  const [users, setUsers] = useState<Member[]>([]);
+  const { backendError, setBackendError } = useContext(MainContext);
   //ref on all radio button and clicking it when calling filter off to avoid confusing ui
   const allRadioRef = createRef<HTMLInputElement>();
 
-  const getAllUsers = () => {
-    setLoading(true);
-    axiosClient.get("/users/list").then(({ data }) => {
-      setUsers(data.users);
-      setLoading(false);
+  const { data, isLoading, isSuccess }: UseQueryResult<{ users: Member[] }> =
+    useQuery({
+      queryKey: ["allUsers"],
+      queryFn: getAllUsers,
     });
-  };
 
   useEffect(() => {
-    getAllUsers();
-  }, []);
+    if (isSuccess && data) {
+      if (data.users) {
+        setUsers(data.users);
+      }
+    }
 
-  const userSearchHandler = (
-    type: string,
-    value: string | undefined = undefined,
-  ) => {
-    setLoading(true);
-
-    const payload = {
-      searchKey: value || userSearchRef.current?.value,
-      type,
+    return () => {
+      setUsers([]);
     };
+  }, [data, isSuccess]);
 
-    axiosClient.post("/users/list/search", payload).then(({ data }) => {
+  const searchUserMutate = useMutation({
+    mutationFn: searchUsers,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["allUsers"] });
       setUsers(data.searchedUsers);
-      setLoading(false);
-    });
+      setBackendError("");
+    },
+    onError: (err) => {
+      const message = getError(err);
+      setBackendError(message);
+    },
+  });
+
+  const userSearchHandler = (type: string, searchKey: string) => {
+    const payload = {
+      type,
+      searchKey,
+    };
+    searchUserMutate.mutate(payload);
   };
 
   return (
     <div className="mx-auto my-4 min-h-screen w-[90%]">
       <div className="flex w-full flex-col items-start gap-4 md:flex-row md:items-center">
         {/* search users */}
-        <SearchUser
-          setUsers={setUsers}
-          allRadioRef={allRadioRef}
-          getAllUsers={getAllUsers}
-        />
+        <SearchUser setUsers={setUsers} allRadioRef={allRadioRef} />
 
         {/* filter users */}
         <div className="filter">
@@ -70,7 +88,7 @@ const ManageUsers = () => {
             aria-label="All"
             ref={allRadioRef}
             onChange={() => {
-              getAllUsers();
+              userSearchHandler("", "");
             }}
           />
           <input
@@ -102,7 +120,8 @@ const ManageUsers = () => {
           />
         </div>
       </div>
-      {loading ? (
+      {backendError && <FormError message={backendError} />}
+      {isLoading || searchUserMutate.isPending ? (
         <div>
           <div className="mt-[15%] flex min-h-screen flex-col items-center gap-5">
             <ScaleLoader color="#8BE9FD" />
@@ -110,7 +129,7 @@ const ManageUsers = () => {
         </div>
       ) : (
         <>
-          <div className="my-6 min-h-screen overflow-x-auto pb-24">
+          <div className="my-6 min-h-screen overflow-x-auto py-5">
             <div className="flex items-center gap-4">
               <p>Total Users</p>
               <div className="badge badge-sm badge-secondary font-bold">
@@ -141,7 +160,6 @@ const ManageUsers = () => {
                         profile={user.profile}
                         org_name={user.org_name}
                         loginMethod={user.provider}
-                        getAllUsers={getAllUsers}
                       />
                     );
                   })

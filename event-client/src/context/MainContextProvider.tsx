@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import type { Value } from "./MainContext";
 import { MainContext } from "./MainContext";
-import axiosClient from "../axios-client";
+import axiosClient from "../helper/api/axios-client";
 
 export type User = {
-  id: string;
+  id: number;
   name: string;
   email: string;
-  email_verified_at: null | string;
-  profile: string;
+  email_verified_at: null;
+  profile: null | string;
   role: string;
+  org_id: null | string;
   provider: string;
-  provider_id: string;
-  provider_token: string;
+  provider_id: null | string | number;
+  provider_token: null | string | number;
   created_at: string;
   updated_at: string;
 };
@@ -112,6 +113,8 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [token, _setToken] = useState(localStorage.getItem("access_token"));
 
+  const [backendError, setBackendError] = useState("");
+
   const setToken = (token: string | null) => {
     _setToken(token);
     if (token) {
@@ -139,6 +142,8 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     setToken,
     isOpen,
     setIsOpen,
+    backendError,
+    setBackendError,
   };
 
   return <MainContext.Provider value={values}>{children}</MainContext.Provider>;

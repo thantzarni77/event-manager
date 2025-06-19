@@ -138,7 +138,14 @@ class OrgRepository implements OrgRepositoryInterface
 
         ];
 
-        $rules['orgProfile'] = $action == "create" ? 'required|file|mimes:jpg,jpeg,png,svg,gif|max:5120' : 'file|mimes:jpg,jpeg,png,svg,gif|max:5120';
+        if ($action == "create") {
+            $rules['orgProfile'] = 'required|file|mimes:jpg,jpeg,png,svg,gif|max:5120';
+        }  else {
+            if ($request->hasFile('orgProfile')) {
+                $rules['orgProfile'] = 'file|mimes:jpg,jpeg,png,svg,gif|max:5120';
+            }
+
+        }
 
         $messages = [
             'orgAdminID.min'    => 'You must select an admin',

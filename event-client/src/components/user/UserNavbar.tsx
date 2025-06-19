@@ -1,11 +1,34 @@
-import { useContext, useEffect } from "react";
-import { Link } from "react-router";
+import { useContext, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router";
 
 import { MainContext } from "../../context/MainContext";
-import Logout from "../../helper/Logout";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { logout } from "../../helper/api/apiFunctions";
 
-const Navbar = () => {
-  const { theme, setTheme, user } = useContext(MainContext);
+const UserNavbar = () => {
+  const queryClient = useQueryClient();
+
+  const { theme, setTheme, user, setToken, setUser } = useContext(MainContext);
+
+  const navigate = useNavigate();
+
+  const confirmRef = useRef<HTMLDialogElement>(null);
+
+  const logoutMutation = useMutation({
+    mutationFn: logout,
+    onSuccess: (status) => {
+      if (status == 204) {
+        setToken(null);
+        setUser(null);
+        queryClient.clear();
+        navigate("/landing");
+      }
+    },
+  });
+
+  const logoutController = () => {
+    logoutMutation.mutate();
+  };
 
   //set theme to localstorage and change theme
   useEffect(() => {
@@ -115,7 +138,6 @@ const Navbar = () => {
                 />{" "}
               </svg>
             </button>
-
             {/* notification */}
             <div className="dropdown dropdown-end">
               <button
@@ -180,9 +202,7 @@ const Navbar = () => {
                 </div>
               </div>
             </div>
-
             <span>{user?.name}</span>
-
             {/* Profile Dropdown */}
             <div className="dropdown dropdown-end">
               <div
@@ -213,9 +233,42 @@ const Navbar = () => {
                 <li>
                   <a className="text-base">Settings</a>
                 </li>
-                <Logout />
+
+                <li>
+                  <a
+                    className="text-base"
+                    onClick={() => {
+                      confirmRef.current?.showModal();
+                    }}
+                  >
+                    Logout
+                  </a>
+                </li>
               </ul>
             </div>
+            {/* Promote Dialog */}
+            <dialog
+              ref={confirmRef}
+              className="modal modal-bottom sm:modal-middle"
+            >
+              <div className="modal-box">
+                <h3 className="text-lg font-bold">Attention !</h3>
+                <p className="py-4">Are you sure you want to logout ?</p>
+                <div className="modal-action">
+                  <form method="dialog">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={logoutController}
+                        className="btn btn-success"
+                      >
+                        Yes
+                      </button>
+                      <button className="btn btn-error">No</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </dialog>
           </>
         )}
       </div>
@@ -223,4 +276,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default UserNavbar;

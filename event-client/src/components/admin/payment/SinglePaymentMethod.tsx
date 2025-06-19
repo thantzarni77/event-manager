@@ -1,8 +1,14 @@
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Payment,
+  ServerErrors,
+} from "../../../pages/admin/payment/PaymentMethods";
+
+import { getSinglePayment } from "../../../helper/api/apiFunctions";
+
 import { MdDeleteOutline } from "react-icons/md";
-// import axiosClient from "../../axios-client";
 import { FaEdit } from "react-icons/fa";
-import { Payment } from "../../../pages/admin/payment/PaymentMethods";
-import axiosClient from "../../../axios-client";
 
 type Props = {
   id: string | number;
@@ -12,8 +18,9 @@ type Props = {
   setSelectedID: React.Dispatch<React.SetStateAction<string | number>>;
   deleteDialog: React.RefObject<HTMLDialogElement | null>;
   editModalRef: React.RefObject<HTMLDialogElement | null>;
-
   setSinglePayment: React.Dispatch<React.SetStateAction<Payment | undefined>>;
+  setIsCreate: React.Dispatch<React.SetStateAction<boolean>>;
+  setServerErrors: React.Dispatch<React.SetStateAction<ServerErrors>>;
 };
 
 const SinglePaymentMethod = ({
@@ -25,20 +32,32 @@ const SinglePaymentMethod = ({
   deleteDialog,
   editModalRef,
   setSinglePayment,
+  setIsCreate,
+  setServerErrors,
 }: Props) => {
-  const getIndiPayment = (id: string | number) => {
-    axiosClient
-      .get(`/payment/list/${id}`)
-      .then(({ data }) => {
-        setSinglePayment(data.singlePayment);
-      })
-      .then(() => {
-        editModalRef.current?.showModal();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  const { data, isSuccess, refetch, isFetching } = useQuery({
+    queryKey: ["singlePayment"],
+    queryFn: () => {
+      return getSinglePayment(id);
+    },
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      setIsCreate(false);
+      setServerErrors({});
+      setSinglePayment(data.singlePayment);
+      editModalRef.current?.showModal();
+    }
+  }, [
+    isSuccess,
+    data,
+    editModalRef,
+    setSinglePayment,
+    setIsCreate,
+    setServerErrors,
+  ]);
 
   return (
     <>
@@ -57,10 +76,9 @@ const SinglePaymentMethod = ({
             <MdDeleteOutline className="text-[20px]" />
           </button>
           <button
+            disabled={isFetching}
             className="btn btn-info p-[5px] md:p-2"
-            onClick={() => {
-              getIndiPayment(id);
-            }}
+            onClick={() => refetch()}
           >
             <FaEdit className="text-[20px]" />
           </button>

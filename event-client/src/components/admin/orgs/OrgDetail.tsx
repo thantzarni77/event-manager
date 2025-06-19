@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import axiosClient from "../../../axios-client";
 import { ScaleLoader } from "react-spinners";
 import { FiEdit } from "react-icons/fi";
+import { useQuery } from "@tanstack/react-query";
+import { getSingleOrg } from "../../../helper/api/apiFunctions";
 
 interface OrgMember {
   name: string;
@@ -11,13 +12,14 @@ interface OrgMember {
   role: "org_admin" | "org_member" | string; // add other roles if needed
 }
 
-interface OrgDetails {
+export interface OrgDetails {
+  id?: number;
   name: string;
-  profile: string | null;
-  description: string | null;
+  profile: string;
+  description: string;
 }
 
-interface OrgResponse {
+export interface OrgResponse {
   org: OrgDetails;
   members: OrgMember[];
 }
@@ -29,27 +31,19 @@ const OrgDetail = () => {
 
   const [orgData, setOrgData] = useState<OrgResponse>();
 
+  const { data, isFetching, isSuccess } = useQuery<{ orgData: OrgResponse }>({
+    queryKey: ["singleOrg", id],
+    queryFn: () => {
+      return getSingleOrg(id);
+    },
+    enabled: !!id,
+  });
+
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    axiosClient
-      .get(`/org/detail/${id}`, {
-        signal: signal,
-      })
-      .then(({ data }) => {
-        setOrgData(data.orgData);
-      })
-      .catch((err) => {
-        if (err.name === "AbortError") {
-          console.log("successfully aborted");
-        } else {
-          console.log(err);
-        }
-      });
-
-    return () => controller.abort();
-  }, [id]);
+    if (isSuccess && data) {
+      setOrgData(data.orgData);
+    }
+  }, [isSuccess, data]);
 
   return (
     <div className="mx-auto my-3 w-[90%] max-w-4xl p-6 pb-24">
@@ -71,7 +65,7 @@ const OrgDetail = () => {
           <FiEdit /> Edit
         </button>
       </div>
-      {orgData ? (
+      {!isFetching && orgData ? (
         <>
           {/* Organization  Name/Image*/}
           <div className="mt-4 mb-6">

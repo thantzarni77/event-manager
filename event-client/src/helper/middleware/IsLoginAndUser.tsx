@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import axiosClient from "../../axios-client";
+import axiosClient from "../api/axios-client";
 
 type Props = {
   children: React.ReactNode;

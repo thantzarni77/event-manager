@@ -3,7 +3,7 @@ import Events from "../../pages/user/Events";
 import Carousel from "../../helper/Carousel";
 import { MainContext } from "../../context/MainContext";
 import { useNavigate } from "react-router";
-import axiosClient from "../../axios-client";
+import axiosClient from "../../helper/api/axios-client";
 
 const Home = () => {
   const { user, token, setUser } = useContext(MainContext);

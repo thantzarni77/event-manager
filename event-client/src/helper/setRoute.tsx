@@ -10,7 +10,10 @@ const setRoute = (role: string) => {
     case "org_admin":
       return "/org-admin/dashboard";
     case "org_user":
-      return "org-user/dashboard";
+      return "/org-user/dashboard";
+
+    default:
+      return "/home";
   }
 };
 

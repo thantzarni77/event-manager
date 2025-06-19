@@ -1,42 +1,40 @@
 import { useEffect, useState } from "react";
-import OrgForm, { Admin } from "./OrgForm";
-import axiosClient from "../../../axios-client";
+import OrgForm from "./OrgForm";
 import { useParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getSingleOrg } from "../../../helper/api/apiFunctions";
+import { OrgDetails } from "./OrgDetail";
+
+interface OrgAdmin {
+  id?: number;
+  name: string;
+  email: string;
+  profile: null | string;
+  role: string;
+}
 
 const EditOrg = () => {
-  const [initialValues, setInitialValues] = useState();
-  const [orgAdmin, setOrgAdmin] = useState();
+  const [initialValues, setInitialValues] = useState<OrgDetails | undefined>();
+  const [orgAdmin, setOrgAdmin] = useState<OrgAdmin | undefined>();
 
   const { id } = useParams();
 
+  const { data, isSuccess } = useQuery({
+    queryKey: ["singleOrg", id],
+    queryFn: () => {
+      return getSingleOrg(id);
+    },
+  });
+
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    axiosClient
-      .get(`/org/detail/${id}`, {
-        signal: signal,
-      })
-      .then(({ data }) => {
-        setInitialValues(data.orgData.org);
-        const admin = data.orgData.members.filter(
-          (member: Admin) => member.role == "org_admin",
-        );
-        return admin;
-      })
-      .then((admin) => {
-        setOrgAdmin(admin[0]);
-      })
-      .catch((err) => {
-        if (err.name === "AbortError") {
-          console.log("successfully aborted");
-        } else {
-          console.log(err);
-        }
-      });
-
-    return () => controller.abort();
-  }, [id]);
+    if (isSuccess && data) {
+      setInitialValues(data.orgData.org);
+      const admin = data.orgData.members.filter(
+        (member) => member.role == "org_admin",
+      );
+      setOrgAdmin(admin[0]);
+    }
+  }, [data, isSuccess]);
 
   if (initialValues && orgAdmin) {
     return (

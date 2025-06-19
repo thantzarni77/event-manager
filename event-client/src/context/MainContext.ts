@@ -11,6 +11,8 @@ export type Value = {
   setToken: (token: string | null) => void;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  backendError: string | null | undefined;
+  setBackendError: React.Dispatch<React.SetStateAction<string>>;
 };
 
 type singleData = {
@@ -32,6 +34,8 @@ const initialValues: Value = {
   setToken: () => {},
   isOpen: false,
   setIsOpen: () => {},
+  backendError: "",
+  setBackendError: () => {},
 };
 
 export const MainContext = createContext(initialValues);

@@ -1,8 +1,8 @@
 import React from "react";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 
-//main layout
-const Main = React.lazy(() => import("./layout/Main"));
+//user main layout
+const UserMainLayout = React.lazy(() => import("./layout/UserMainLayout"));
 
 //user main pages
 const Home = React.lazy(() => import("./components/user/Home"));
@@ -18,8 +18,12 @@ const Login = React.lazy(() => import("./pages/Login"));
 const Register = React.lazy(() => import("./pages/Register"));
 const GoogleCallback = React.lazy(() => import("./components/GoogleCallback"));
 
+//admin main layout
+const AdminMainLayout = React.lazy(
+  () => import("./pages/admin/AdminMainLayout"),
+);
+
 //admin main pages
-const Admin = React.lazy(() => import("./pages/admin/Admin"));
 const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
 const Organizations = React.lazy(
   () => import("./pages/admin/orgs/Organizations"),
@@ -34,8 +38,10 @@ const OrgDetail = React.lazy(() => import("./components/admin/orgs/OrgDetail"));
 const AddOrg = React.lazy(() => import("./components/admin/orgs/AddOrg"));
 const EditOrg = React.lazy(() => import("./components/admin/orgs/EditOrg"));
 
+//org main layout
+const OrgMainLayout = React.lazy(() => import("./pages/org/OrgMainLayout"));
+
 //org main pages
-const OrgAdmin = React.lazy(() => import("./pages/org/OrgAdmin"));
 const OrgDashboard = React.lazy(() => import("./pages/org/OrgDashboard"));
 const OrgEvents = React.lazy(() => import("./pages/org/OrgEvents"));
 const Members = React.lazy(() => import("./pages/org/Members"));
@@ -45,6 +51,9 @@ const OrgEventAdd = React.lazy(() => import("./components/org/OrgEventAdd"));
 
 //landing page
 const Landing = React.lazy(() => import("./components/Landing"));
+
+//error
+const Error = React.lazy(() => import("./components/Error"));
 
 import MainContextProvider from "./context/MainContextProvider";
 
@@ -60,9 +69,10 @@ const App = () => {
     //user && login register
     {
       path: "/",
+      errorElement: <Error />,
       element: (
         <Suspense fallback={<></>}>
-          <Main />
+          <UserMainLayout />
         </Suspense>
       ),
       children: [
@@ -135,7 +145,7 @@ const App = () => {
     //admin && superadmin
     {
       path: "/admin",
-      element: <Admin />,
+      element: <AdminMainLayout />,
       children: [
         {
           path: "dashboard",
@@ -208,7 +218,7 @@ const App = () => {
     //org admin && org members
     {
       path: "/org-admin",
-      element: <OrgAdmin />,
+      element: <OrgMainLayout />,
       children: [
         {
           path: "dashboard",

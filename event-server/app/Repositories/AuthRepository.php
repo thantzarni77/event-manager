@@ -1,16 +1,21 @@
 <?php
 namespace App\Repositories;
 
-use App\Interfaces\AuthRepositoryInterface;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use App\Interfaces\AuthRepositoryInterface;
+use Illuminate\Validation\ValidationException;
 
 class AuthRepository implements AuthRepositoryInterface
 {
     //user register
-    public function signup($data)
+    public function signup($request)
     {
+
+        $data = $this->checkValidation($request);
+
         $user = User::create([
             'name'     => $data['username'],
             'email'    => $data['email'],
@@ -41,6 +46,30 @@ class AuthRepository implements AuthRepositoryInterface
     {
         $user->currentAccessToken()->delete();
         return response('', 204);
+
+    }
+
+    private function checkValidation($request) {
+
+      $rules = [
+        'username' => 'required',
+        'email' => 'required|unique:users,email' ,
+        'password' => 'required|min:8',
+      ];
+
+      $messages = [
+        'email.unique' => 'The choosen email is already registered'
+      ];
+
+      $validator = Validator::make($request, $rules, $messages);
+
+      if ($validator->fails()) {
+        throw ValidationException::withMessages($validator->errors()->toArray());
+      }
+
+      $validatedData = $validator->validated();
+
+      return $validatedData;
 
     }
 

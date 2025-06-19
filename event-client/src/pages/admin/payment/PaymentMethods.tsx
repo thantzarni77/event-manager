@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { FaCirclePlus } from "react-icons/fa6";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import axiosClient from "../../../axios-client";
-import { ScaleLoader } from "react-spinners";
-import PaymentEditModal from "../../../components/admin/payment/PaymentEditModal";
-import PaymentAddModal from "../../../components/admin/payment/PaymentAddModal";
+import PaymentForm from "../../../components/admin/payment/PaymentForm";
 import SinglePaymentMethod from "../../../components/admin/payment/SinglePaymentMethod";
+
+import {
+  deletePayment,
+  getAllPayments,
+} from "../../../helper/api/apiFunctions";
+
+import { FaCirclePlus } from "react-icons/fa6";
+import { ScaleLoader } from "react-spinners";
 
 export type Payment = {
   id: string | number;
@@ -14,17 +19,26 @@ export type Payment = {
   account_type: string;
 };
 
-type PaymentState = {
+export type PaymentState = {
   account_name: string;
   account_no: string;
   account_type: string;
 };
 
+export type ServerErrors = {
+  account_type?: string[];
+  account_no?: string[];
+  account_name?: string[];
+};
+
 const PaymentMethods = () => {
-  //erros and  loading status
-  const [errors, setErrors] = useState<Payment | null>();
-  const [loading, setLoading] = useState(false);
-  const [pageLoading, setPageLoading] = useState(false);
+  const queryClient = useQueryClient();
+
+  //payment form mode
+  const [isCreate, setIsCreate] = useState(true);
+
+  //single payment
+  const [singlePayment, setSinglePayment] = useState<Payment | undefined>();
 
   //payment id from child
   const [selectedID, setSelectedID] = useState<string | number>("");
@@ -32,122 +46,53 @@ const PaymentMethods = () => {
   //all payments from db
   const [payments, setPayments] = useState<Payment[]>();
 
-  //single payment
-  const [singlePayment, setSinglePayment] = useState<Payment>();
+  //errors from server
+  const [serverErrors, setServerErrors] = useState<ServerErrors>({});
 
   //dialog boxes
-  const addModalRef = useRef<HTMLDialogElement>(null);
-  const editModalRef = useRef<HTMLDialogElement>(null);
+  const paymentFormModalRef = useRef<HTMLDialogElement>(null);
+
+  // const editModalRef = useRef<HTMLDialogElement>(null);
   const deleteDialog = useRef<HTMLDialogElement>(null);
 
-  //get setFormData function from child
-  const setFormDataRef = useRef<((data: PaymentState) => void) | null>(null);
-
-  const getAllPayments = () => {
-    setPageLoading(true);
-    axiosClient.get("/payment/list").then(({ data }) => {
-      setPayments(data.payments);
-      setPageLoading(false);
-    });
-  };
+  const { data, isSuccess, isPending } = useQuery({
+    queryKey: ["payments"],
+    queryFn: getAllPayments,
+  });
 
   useEffect(() => {
-    getAllPayments();
-  }, []);
+    if (isSuccess && data) {
+      setPayments(data.payments);
+    }
+  }, [data, isSuccess]);
 
-  //add payment
-  const paymentAddHandler = (
-    accName: string | undefined,
-    accNum: string | undefined,
-    accType: string | undefined,
-  ) => {
-    setLoading(true);
-
-    const payload = {
-      account_name: accName,
-      account_no: accNum,
-      account_type: accType,
-    };
-
-    axiosClient
-      .post("/payment/add", payload)
-      .then((response) => {
-        if (response.data == "201") {
-          getAllPayments();
-          setErrors(null);
-          setLoading(false);
-          addModalRef.current?.close();
-        }
-      })
-      .then(() => {
-        if (setFormDataRef.current) {
-          setFormDataRef.current({
-            account_name: "",
-            account_no: "",
-            account_type: "",
-          });
-        }
-      })
-      .catch(({ response }) => {
-        setErrors(response.data.errors);
-        setLoading(false);
-      });
-  };
-
-  //update payment
-  const paymentUpdateHandler = (
-    id: string | number | undefined,
-    accName: string | undefined,
-    accNum: string | undefined,
-    accType: string | undefined,
-  ) => {
-    setLoading(true);
-
-    const payload = {
-      paymentID: id,
-      account_name: accName,
-      account_no: accNum,
-      account_type: accType,
-    };
-
-    axiosClient
-      .post("/payment/update", payload)
-      .then((response) => {
-        if (response.data == "202") {
-          getAllPayments();
-          setErrors(null);
-          setLoading(false);
-          editModalRef.current?.close();
-        }
-      })
-      .catch(({ response }) => {
-        setErrors(response.data.errors);
-        setLoading(false);
-      });
-  };
+  const deletePaymentMutation = useMutation({
+    mutationFn: deletePayment,
+    onSuccess: (data) => {
+      if (data == 200) {
+        queryClient.invalidateQueries({ queryKey: ["payments"] });
+      }
+    },
+  });
 
   //delete payment
-  const deletePayment = () => {
+  const deletePaymentHandler = () => {
     const payload = {
       payment_id: selectedID,
     };
 
-    axiosClient.post("/payment/delete", payload).then((response) => {
-      if (response.data == "200") {
-        getAllPayments();
-      }
-    });
+    deletePaymentMutation.mutate(payload);
   };
 
   return (
     <div className="mx-auto w-full px-10">
-      {pageLoading && (
+      {isPending && (
         <div className="mt-[15%] flex items-center">
           <ScaleLoader color="#8BE9FD" className="mx-auto" />
         </div>
       )}
       <div className="rounded-box border-base-content/5 bg-base-100 my-2 w-full overflow-x-auto border">
-        {!pageLoading && (
+        {data?.payments && (
           <table className="table">
             <thead>
               <tr>
@@ -175,8 +120,10 @@ const PaymentMethods = () => {
                     acc_num={payment.account_no}
                     deleteDialog={deleteDialog}
                     setSelectedID={setSelectedID}
-                    editModalRef={editModalRef}
+                    editModalRef={paymentFormModalRef}
                     setSinglePayment={setSinglePayment}
+                    setIsCreate={setIsCreate}
+                    setServerErrors={setServerErrors}
                   />
                 );
               })}
@@ -187,27 +134,22 @@ const PaymentMethods = () => {
 
       <FaCirclePlus
         onClick={() => {
-          if (addModalRef.current) {
-            addModalRef.current.showModal();
+          if (paymentFormModalRef.current) {
+            setServerErrors({});
+            setIsCreate(true);
+            paymentFormModalRef.current.showModal();
           }
         }}
         className="text-primary btn btn-circle absolute right-10 bottom-25 z-10 text-[50px]"
       />
 
-      <PaymentAddModal
-        ref={addModalRef}
-        paymentAddHandler={paymentAddHandler}
-        errors={errors}
-        loading={loading}
-        exposeSetFormData={(fn) => (setFormDataRef.current = fn)}
-      />
-
-      <PaymentEditModal
-        ref={editModalRef}
-        paymentUpdateHandler={paymentUpdateHandler}
+      <PaymentForm
+        isCreate={isCreate}
+        addModalRef={paymentFormModalRef}
         singlePayment={singlePayment}
-        errors={errors}
-        loading={loading}
+        setIsCreate={setIsCreate}
+        serverErrors={serverErrors}
+        setServerErrors={setServerErrors}
       />
 
       {/* DeletePayment */}
@@ -219,7 +161,7 @@ const PaymentMethods = () => {
             <form method="dialog">
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => deletePayment()}
+                  onClick={() => deletePaymentHandler()}
                   className="btn btn-success"
                 >
                   Yes

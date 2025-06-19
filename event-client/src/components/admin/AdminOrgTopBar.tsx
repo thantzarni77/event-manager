@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { MainContext } from "../../context/MainContext";
 
-const TopBar = () => {
+const AdminOrgTopBar = () => {
   const { user, theme, setTheme } = useContext(MainContext);
 
   //set theme to localstorage and change theme
@@ -90,4 +90,4 @@ const TopBar = () => {
   );
 };
 
-export default TopBar;
+export default AdminOrgTopBar;

@@ -1,8 +1,9 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useRef } from "react";
 import { MainContext } from "../../../context/MainContext";
 import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
-import axiosClient from "../../../axios-client";
 import { IoEyeOutline } from "react-icons/io5";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { userRoleChange } from "../../../helper/api/apiFunctions";
 
 type Props = {
   id: number | string;
@@ -11,8 +12,12 @@ type Props = {
   loginMethod: string;
   profile: string | null;
   org_name: string | null | undefined;
-  getAllUsers?: () => void;
 };
+
+export interface RoleChangePayload {
+  userID: string | number;
+  changeType: string;
+}
 
 const UserData = ({
   id,
@@ -21,23 +26,25 @@ const UserData = ({
   loginMethod,
   profile,
   org_name,
-  getAllUsers,
 }: Props) => {
+  const queryClient = useQueryClient();
   const { user } = useContext(MainContext);
 
-  const [loading, setLoading] = useState(false);
+  const roleChangeMutation = useMutation({
+    mutationFn: userRoleChange,
+    onSuccess: (status) => {
+      if (status == 200) {
+        queryClient.invalidateQueries({ queryKey: ["allUsers"] });
+      }
+    },
+  });
 
   const roleChangeHandler = (changeType: string) => {
-    setLoading(true);
     const payload = {
       userID: id,
       changeType,
     };
-
-    axiosClient.post("/user/role-change", payload).then(() => {
-      setLoading(false);
-      if (getAllUsers) getAllUsers();
-    });
+    roleChangeMutation.mutate(payload);
   };
 
   const promoteModalRef = useRef<HTMLDialogElement>(null);
@@ -83,7 +90,7 @@ const UserData = ({
             {role == "user" && (
               <>
                 <button
-                  disabled={loading}
+                  disabled={roleChangeMutation.isPending}
                   type="button"
                   onClick={openPromoteDialog}
                   className="btn btn-sm btn-success"
@@ -121,7 +128,7 @@ const UserData = ({
             {role == "admin" && !(user?.role == "admin" && role == "admin") && (
               <>
                 <button
-                  disabled={loading}
+                  disabled={roleChangeMutation.isPending}
                   type="button"
                   onClick={openDemoteDialog}
                   className="btn btn-sm btn-error"

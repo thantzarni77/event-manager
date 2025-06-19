@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { MainContext } from "../../context/MainContext";
-import axiosClient from "../../axios-client";
+import axiosClient from "../api/axios-client";
 
 type Props = {
   children: React.ReactNode;

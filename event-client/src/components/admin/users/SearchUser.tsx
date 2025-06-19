@@ -1,7 +1,16 @@
-import { createRef, useState } from "react";
-import axiosClient from "../../../axios-client";
 import { FaSearch } from "react-icons/fa";
 import { MdFilterAltOff } from "react-icons/md";
+
+import { searchUsers } from "../../../helper/api/apiFunctions";
+import FormError from "../../../helper/FormError";
+import { getError } from "../../../helper/api/errorHandler";
+
+import { useContext } from "react";
+import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { MainContext } from "../../../context/MainContext";
+
 type User = {
   id: number;
   name: string;
@@ -11,40 +20,53 @@ type User = {
   provider: string;
 };
 
+export interface SearchUserPayload {
+  searchKey: string | null;
+  type: string;
+}
+
+type SearchKey = Omit<SearchUserPayload, "type">;
+
 type Props = {
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   allRadioRef?: React.RefObject<HTMLInputElement | null>;
-  getAllUsers?: () => void;
 };
 
-const SearchUser = ({ setUsers, allRadioRef, getAllUsers }: Props) => {
-  const userSearchRef = createRef<HTMLInputElement>();
+const SearchUser = ({ setUsers, allRadioRef }: Props) => {
+  const queryClient = useQueryClient();
+  const { backendError, setBackendError } = useContext(MainContext);
 
-  const [loading, setLoading] = useState(false);
+  const { register, handleSubmit, reset } = useForm<SearchUserPayload>();
 
-  const userSearchHandler = (
-    type: string,
-    value: string | undefined = undefined,
-  ) => {
-    setLoading(true);
-
-    const payload = {
-      searchKey: value || userSearchRef.current?.value,
-      type,
-    };
-
-    axiosClient.post("/users/list/search", payload).then(({ data }) => {
+  const searchUserMutate = useMutation({
+    mutationFn: searchUsers,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["allUsers"] });
       setUsers(data.searchedUsers);
-      setLoading(false);
-    });
+      setBackendError("");
+    },
+    onError: (err) => {
+      const message = getError(err);
+      setBackendError(message);
+    },
+  });
+
+  //wrapper function to pass type args
+  const onFormSubmit = (formData: SearchKey) => {
+    const payload = {
+      searchKey: formData.searchKey,
+      type: "search",
+    };
+    userSearchHandler(payload);
+  };
+
+  const userSearchHandler = (payload: SearchUserPayload) => {
+    searchUserMutate.mutate(payload);
   };
   return (
     <form
       method="GET"
-      onSubmit={(e) => {
-        e.preventDefault();
-        userSearchHandler("search");
-      }}
+      onSubmit={handleSubmit(onFormSubmit)}
       className="flex items-center gap-4"
     >
       <label className="input">
@@ -67,23 +89,30 @@ const SearchUser = ({ setUsers, allRadioRef, getAllUsers }: Props) => {
         <input
           type="search"
           className="grow"
+          {...register("searchKey")}
           placeholder="Search user's name or email"
-          ref={userSearchRef}
-          value={userSearchRef.current?.value}
         />
+        {backendError && <FormError message={backendError} />}
       </label>
-      <button disabled={loading} type="submit" className="btn btn-primary">
+      <button
+        disabled={searchUserMutate.isPending}
+        type="submit"
+        className="btn btn-primary"
+      >
         <FaSearch />
       </button>
-      {allRadioRef && getAllUsers && (
+      {allRadioRef && (
         <button
-          disabled={loading}
+          disabled={searchUserMutate.isPending}
           type="button"
           className="btn btn-error"
           onClick={() => {
             allRadioRef.current?.click();
-
-            getAllUsers();
+            reset();
+            searchUserMutate.mutate({
+              searchKey: "",
+              type: "",
+            });
           }}
         >
           <MdFilterAltOff />

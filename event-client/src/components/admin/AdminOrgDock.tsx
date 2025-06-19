@@ -1,22 +1,47 @@
 import { MdManageAccounts, MdOutlinePayment } from "react-icons/md";
-import { Link, matchPath, useLocation } from "react-router";
+import { Link, matchPath, useLocation, useNavigate } from "react-router";
 
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { MainContext } from "../../context/MainContext";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { logout } from "../../helper/api/apiFunctions";
+
 import { VscOrganization } from "react-icons/vsc";
 import { BsCalendar2Event } from "react-icons/bs";
 import { GoSidebarCollapse } from "react-icons/go";
 import { IoHomeOutline } from "react-icons/io5";
 import { FaBuildingUser } from "react-icons/fa6";
-import Logout from "../../helper/Logout";
+import { RiLogoutBoxLine } from "react-icons/ri";
 
-const Dock = () => {
-  const { user } = useContext(MainContext);
+const AdminOrgDock = () => {
+  const queryClient = useQueryClient();
+
+  const { user, setToken, setUser } = useContext(MainContext);
+
+  const navigate = useNavigate();
   const location = useLocation();
 
   const currentPath = location.pathname;
 
   const { isOpen, setIsOpen } = useContext(MainContext);
+
+  const logoutMutation = useMutation({
+    mutationFn: logout,
+    onSuccess: (status) => {
+      if (status == 204) {
+        setToken(null);
+        setUser(null);
+        queryClient.clear();
+        navigate("/landing");
+      }
+    },
+  });
+
+  const logoutController = () => {
+    logoutMutation.mutate();
+  };
+
+  const confirmRef = useRef<HTMLDialogElement>(null);
 
   const dockItemClass = (isActive: boolean) =>
     ` flex items-center rounded-xl transition-all  duration-200 ease-out gap-3 px-2 py-2 transition-all duration-200
@@ -164,41 +189,44 @@ const Dock = () => {
               </Link>
             </li>
           )}
+        </ul>
 
-          {/* Stats */}
-          <li>
-            <a className={dockItemClass(currentPath == "/")}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+        {/* logout */}
+        <ul onClick={() => confirmRef.current?.showModal()}>
+          <li className="hover:bg-base-200 mx-2 rounded-xl py-2 hover:cursor-pointer">
+            <span className="mx-2 flex items-center gap-3">
+              <RiLogoutBoxLine className="flex-shrink-0 text-2xl lg:text-[24px]" />
+              <span
+                className={`transition-opacity duration-200 ${isOpen ? "opacity-100" : "opacity-0"} overflow-hidden whitespace-nowrap`}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
-              </svg>
-            </a>
-            <span
-              className={`transition-opacity duration-200 ${isOpen ? "opacity-100" : "opacity-0"} overflow-hidden whitespace-nowrap`}
-            >
-              Stats
+                Logout
+              </span>
             </span>
           </li>
         </ul>
-
-        <ul>
-          <li className="hover:bg-base-200 mx-2 rounded-xl py-2 hover:cursor-pointer">
-            <Logout isIcon={true} />
-          </li>
-        </ul>
+        {/* Promote Dialog */}
+        <dialog ref={confirmRef} className="modal modal-bottom sm:modal-middle">
+          <div className="modal-box">
+            <h3 className="text-lg font-bold">Attention !</h3>
+            <p className="py-4">Are you sure you want to logout ?</p>
+            <div className="modal-action">
+              <form method="dialog">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={logoutController}
+                    className="btn btn-success"
+                  >
+                    Yes
+                  </button>
+                  <button className="btn btn-error">No</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </dialog>
       </div>
     </div>
   );
 };
 
-export default Dock;
+export default AdminOrgDock;

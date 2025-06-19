@@ -1,10 +1,11 @@
 import { Link } from "react-router";
 import SingleOrg from "../../../components/admin/orgs/SingleOrg";
-import { createRef, useCallback, useEffect, useState } from "react";
-import axiosClient from "../../../axios-client";
+import { createRef, useEffect, useState } from "react";
 import { ScaleLoader } from "react-spinners";
 import { FaFilter } from "react-icons/fa6";
 import { MdFilterAltOff } from "react-icons/md";
+import { useQuery } from "@tanstack/react-query";
+import { getAllOrgs } from "../../../helper/api/apiFunctions";
 
 export interface Org {
   id?: string | number;
@@ -14,7 +15,7 @@ export interface Org {
   memberCount?: string | number;
 }
 
-interface Membercount {
+export interface Membercount {
   org_id: null | number | string;
   member_count: number | string;
 }
@@ -23,48 +24,37 @@ const Organizations = () => {
   const [orgs, setOrgs] = useState<Org[] | null>();
   const [memberCount, setMemberCount] = useState<Membercount[]>();
 
-  const [loading, setLoading] = useState(true);
   const [option, setOption] = useState("asc");
-  const [url, setUrl] = useState("/org/list");
 
   const selectRef = createRef<HTMLSelectElement>();
 
-  //fetch Org data
-  const fetchData = useCallback(() => {
-    axiosClient
-      .get(url)
-      .then(({ data }) => {
-        setOrgs(data.orgs);
-        setMemberCount(data.orgMemberCounts);
-        setLoading(false);
-      })
-      .catch((err) => {
-        throw err;
-      });
-  }, [url]);
+  const { data, isSuccess, isFetching, refetch } = useQuery<{
+    orgs: Org[];
+    orgMemberCounts: Membercount[];
+  }>({
+    queryKey: ["orgs"],
+    queryFn: () => {
+      const filterType = selectRef.current?.value;
+
+      if (filterType) {
+        const result = filterType?.split(",");
+        if (result) setOption(result[1]);
+        const url = `/org/list?column=${result && result[0]}&type=${result && result[1]}`;
+        return getAllOrgs(url);
+      } else {
+        return getAllOrgs("/org/list");
+      }
+    },
+  });
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const orgFilter = (e: React.FormEvent) => {
-    e.preventDefault();
-    const filterType = selectRef.current?.value;
-
-    const result = filterType?.split(",");
-
-    setLoading(true);
-
-    if (result) setOption(result[1]);
-
-    setOrgs(null);
-
-    setUrl(
-      `/org/list?column=${result && result[0]}&type=${result && result[1]}`,
-    );
-
-    fetchData();
-  };
+    if (isSuccess && data) {
+      if (data.orgs && data.orgMemberCounts) {
+        setOrgs(data.orgs);
+        setMemberCount(data.orgMemberCounts);
+      }
+    }
+  }, [data, isSuccess]);
 
   return (
     <div className="mx-auto my-4 flex min-h-screen w-[90%] flex-col items-start">
@@ -73,7 +63,10 @@ const Organizations = () => {
           Add Organization
         </Link>
         <form
-          onSubmit={orgFilter}
+          onSubmit={(e: React.FormEvent) => {
+            e.preventDefault();
+            refetch();
+          }}
           className="items flex gap-5"
           defaultValue={option}
         >
@@ -95,9 +88,10 @@ const Organizations = () => {
         <button
           className="btn btn-error"
           onClick={() => {
-            setUrl("/org/list");
-            setLoading(true);
-            fetchData();
+            if (selectRef.current) {
+              selectRef.current.value = "";
+            }
+            refetch();
           }}
         >
           <MdFilterAltOff />
@@ -105,14 +99,15 @@ const Organizations = () => {
         </button>
       </div>
       <div className="my-5 flex w-full flex-wrap items-center justify-center gap-5 pb-24">
-        {loading && (
+        {isFetching && (
           <div className="mt-[10%]">
             <div className="flex min-h-screen flex-col items-center gap-5">
               <ScaleLoader color="#8BE9FD" />
             </div>
           </div>
         )}
-        {orgs &&
+        {!isFetching &&
+          orgs &&
           orgs.map((org) => {
             const match = memberCount?.find(
               (single) => single.org_id === org.id,

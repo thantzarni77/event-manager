@@ -1,75 +1,79 @@
-import { createRef, useContext, useEffect, useState } from "react";
-import { LuLogIn } from "react-icons/lu";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import LoginWithGoogle from "../components/LoginWithGoogle";
-import { MainContext } from "../context/MainContext";
-import axiosClient from "../axios-client";
+import { useForm } from "react-hook-form";
+
+import { LuLogIn } from "react-icons/lu";
 import { FaEye } from "react-icons/fa";
 import { IoIosEyeOff } from "react-icons/io";
+
+import LoginWithGoogle from "../components/LoginWithGoogle";
+import { MainContext } from "../context/MainContext";
+
 import setRoute from "../helper/setRoute";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  getGoogleLoginURL,
+  GoogleLoginURL,
+  login,
+} from "../helper/api/apiFunctions";
+import FormError from "../helper/FormError";
+import { getError } from "../helper/api/errorHandler";
+
+export interface LoginFormData {
+  email: string;
+  password: string;
+}
 
 const Login = () => {
-  const { token, setToken, setUser } = useContext(MainContext);
-  const [error, setError] = useState<string | undefined | null>();
-  const [loading, setLoading] = useState(false);
+  //access query client
+  const queryClient = useQueryClient();
+
+  const { token, setToken, setUser, backendError, setBackendError } =
+    useContext(MainContext);
 
   const navigate = useNavigate();
 
-  const [isPassword, setIsPassword] = useState("password");
-
-  const emailRef = createRef<HTMLInputElement>();
-  const passwordRef = createRef<HTMLInputElement>();
-
-  //fetch google login url
-  const [loginUrl, setLoginUrl] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   //show hide toggle
   const pwdToggle = () => {
-    if (!passwordRef.current) return;
-
-    if (passwordRef.current.type == "password") {
-      setIsPassword("text");
-    } else {
-      setIsPassword("password");
-    }
+    setShowPassword((prev) => !prev);
   };
 
-  useEffect(() => {
-    axiosClient
-      .get("auth")
-      .then(({ data }) => {
-        setLoginUrl(data.url);
-      })
-      .catch((err) => {
-        throw err;
-      });
-  }, []);
+  //hook form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    mode: "onBlur",
+  });
 
-  const loginHandler = (event: React.FormEvent) => {
-    setLoading(true);
-    event.preventDefault();
+  //get google login url
+  const { data } = useQuery<GoogleLoginURL>({
+    queryKey: ["googleURL"],
+    queryFn: getGoogleLoginURL,
+  });
 
-    const payload = {
-      email: emailRef.current?.value,
-      password: passwordRef.current?.value,
-    };
+  //login mutation
+  const loginMutation = useMutation({
+    mutationFn: login,
+    onSuccess: (data) => {
+      setToken(data.access_token);
+      setUser(data.user);
+      const route = setRoute(data.user.role);
+      queryClient.invalidateQueries({ queryKey: ["googleURL"] });
+      setBackendError("");
+      navigate(`${route}`);
+    },
+    onError: (err) => {
+      const message = getError(err);
+      setBackendError(message);
+    },
+  });
 
-    axiosClient
-      .post("login", payload)
-      .then(({ data }) => {
-        setToken(data.access_token);
-        setUser(data.user);
-        const route = setRoute(data.user.role);
-        return route;
-      })
-      .then((route) => {
-        setLoading(false);
-        navigate(`${route}`);
-      })
-      .catch(({ response }) => {
-        setError(response.data.message);
-        setLoading(false);
-      });
+  const loginHandler = (payload: LoginFormData) => {
+    loginMutation.mutate(payload);
   };
 
   if (token == null) {
@@ -79,11 +83,13 @@ const Login = () => {
         <div className="flex w-full flex-col items-center">
           <form
             className="mx-auto flex w-[80%] flex-col items-center gap-1"
-            onSubmit={loginHandler}
+            onSubmit={handleSubmit(loginHandler)}
           >
             <div className="flex w-full flex-col lg:w-[50%]">
               <label htmlFor="">Email</label>
-              <label className="input validator my-2 w-full">
+              <label
+                className={`input my-2 w-full ${errors.email || backendError ? "border-2 border-red-400" : ""}`}
+              >
                 <svg
                   className="h-[1.3em] opacity-50"
                   xmlns="http://www.w3.org/2000/svg"
@@ -102,19 +108,24 @@ const Login = () => {
                 </svg>
                 <input
                   type="email"
-                  placeholder="mail@site.com"
-                  required
-                  ref={emailRef}
+                  placeholder="mail@gmail.com"
+                  {...register("email", {
+                    required: { value: true, message: "Email is required" },
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "Enter a valid email address",
+                    },
+                  })}
                 />
               </label>
-              <div className="validator-hint hidden">
-                Enter valid email address
-              </div>
+              {errors.email && <FormError message={errors.email.message} />}
             </div>
 
             <div className="my-2 flex w-full flex-col lg:w-[50%]">
               <label htmlFor="">Password</label>
-              <label className="input validator my-2 w-full">
+              <label
+                className={`input my-2 w-full ${errors.password || backendError ? "border-2 border-red-400" : ""}`}
+              >
                 <svg
                   className="h-[1.3em] opacity-50"
                   xmlns="http://www.w3.org/2000/svg"
@@ -137,13 +148,14 @@ const Login = () => {
                   </g>
                 </svg>
                 <input
-                  type={isPassword}
-                  ref={passwordRef}
-                  required
+                  type={showPassword ? "text" : "password"}
+                  {...register("password", {
+                    required: { value: true, message: "Password is required" },
+                  })}
                   placeholder="Password"
                 />
 
-                {isPassword == "password" ? (
+                {!showPassword ? (
                   <div
                     onClick={pwdToggle}
                     className="text-[18px] hover:cursor-pointer"
@@ -159,23 +171,9 @@ const Login = () => {
                   </div>
                 )}
               </label>
-              {error && (
-                <div role="alert" id="alert" className="alert alert-warning">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 shrink-0 stroke-current"
-                    fill="none"
-                    viewBox="0 0 22 22"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                  <span>{error}</span>
-                </div>
+              {backendError && <FormError message={backendError} />}
+              {errors.password && (
+                <FormError message={errors.password.message} />
               )}
             </div>
 
@@ -188,7 +186,7 @@ const Login = () => {
             </p>
 
             <button
-              disabled={loading}
+              disabled={loginMutation.isPending}
               type="submit"
               className="btn btn-primary my-2 w-full lg:w-[50%]"
             >
@@ -198,9 +196,9 @@ const Login = () => {
           </form>
 
           <div className="flex w-[80%] flex-col items-center">
-            {loginUrl && (
+            {data && data.url && (
               <a
-                href={loginUrl}
+                href={data.url}
                 className="btn btn-info my-2 w-full hover:cursor-pointer lg:w-[50%]"
               >
                 <LoginWithGoogle />

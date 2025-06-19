@@ -3,10 +3,12 @@ import { Outlet } from "react-router";
 import ScrollToTop from "../../components/user/scroll/ScrollToTop";
 import { MainContext } from "../../context/MainContext";
 
-const TopBar = React.lazy(() => import("../../components/admin/TopBar"));
-const Dock = React.lazy(() => import("../../components/admin/Dock"));
+const AdminOrgTopBar = React.lazy(
+  () => import("../../components/admin/AdminOrgTopBar"),
+);
+const Dock = React.lazy(() => import("../../components/admin/AdminOrgDock"));
 
-const OrgAdmin = () => {
+const OrgMainLayout = () => {
   const { isOpen } = useContext(MainContext);
   return (
     <div
@@ -14,7 +16,7 @@ const OrgAdmin = () => {
     >
       <Suspense fallback={<></>}>
         <ScrollToTop />
-        <TopBar />
+        <AdminOrgTopBar />
         <Outlet />
         <Dock />
       </Suspense>
@@ -22,4 +24,4 @@ const OrgAdmin = () => {
   );
 };
 
-export default OrgAdmin;
+export default OrgMainLayout;

@@ -1,44 +1,44 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { MainContext } from "../context/MainContext";
 import { User } from "../context/MainContextProvider";
 
 import { ScaleLoader } from "react-spinners";
 
-import axiosClient from "../axios-client";
 import setRoute from "../helper/setRoute";
+import { useQuery } from "@tanstack/react-query";
+import { googleLogin } from "../helper/api/apiFunctions";
+
+export interface GoogleLoginData {
+  user: User;
+  access_token: string;
+  token_type: string;
+}
 
 const GoogleCallback = () => {
-  const [data, setData] = useState<Data | null>(null);
-  const { theme, setUser, setToken, user } = useContext(MainContext);
-  const hasFetched = useRef(false);
+  const { theme, setUser, setToken } = useContext(MainContext);
   const location = useLocation();
 
   const navigate = useNavigate();
 
-  type Data = {
-    user: User;
-    access_token: string;
-    token_type: string;
-  };
+  const { data, isSuccess } = useQuery<GoogleLoginData>({
+    queryKey: ["googleLogin", location.search],
+    queryFn: () => googleLogin(location.search),
+    enabled: !!location.search, // only run if location is present
+    retry: false,
+    gcTime: 5 * 60 * 1000,
+  });
 
   useEffect(() => {
-    if (hasFetched.current) return;
-
-    hasFetched.current = true;
-
-    axiosClient
-      .get(`auth/callback/${location.search}`)
-      .then(({ data }) => {
-        setData(data);
+    if (isSuccess && data) {
+      if (data.user && data.access_token) {
+        setUser(data.user);
         setToken(data.access_token);
         const route = setRoute(data.user.role);
-        return route;
-      })
-      .then((route) => {
         navigate(`${route}`);
-      });
-  }, [location.search, setUser, data, setToken, navigate, user]);
+      }
+    }
+  }, [isSuccess, data, navigate, setToken, setUser]);
 
   return (
     <div className="mt-[15%] flex min-h-screen flex-col items-center gap-5">

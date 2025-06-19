@@ -1,15 +1,15 @@
 import { Outlet } from "react-router";
 
-import Navbar from "../components/user/Navbar";
 import Footer from "../helper/Footer";
 import ScrollToTop from "../components/user/scroll/ScrollToTop";
+import UserNavbar from "../components/user/UserNavbar";
 
-const Main = () => {
+const UserMainLayout = () => {
   return (
     <div className="flex min-h-screen flex-col">
       {/* <ScrollRestoration /> */}
       <ScrollToTop />
-      <Navbar />
+      <UserNavbar />
       <span className="flex-1">
         <Outlet />
       </span>
@@ -18,4 +18,4 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default UserMainLayout;
